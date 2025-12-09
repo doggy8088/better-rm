@@ -17,7 +17,43 @@
 
 ## 安裝方式
 
-### 方法一：使用別名（推薦）
+### 快速安裝（推薦）⚡
+
+只需一行命令即可自動安裝：
+
+```bash
+curl -sSL https://raw.githubusercontent.com/doggy8088/better-rm/main/install.sh | bash
+```
+
+或使用 wget：
+
+```bash
+wget -qO- https://raw.githubusercontent.com/doggy8088/better-rm/main/install.sh | bash
+```
+
+安裝腳本會自動：
+- ✅ 下載 better-rm 到 `~/.better-rm` 目錄
+- ✅ 偵測你的 shell (bash/zsh) 並設定別名
+- ✅ 加入 `alias rm='~/.better-rm/better-rm'` 到你的 shell 設定檔
+- ✅ 提供清楚的後續步驟說明
+
+安裝完成後，執行以下命令啟用：
+
+```bash
+source ~/.bashrc  # 如果使用 bash
+# 或
+source ~/.zshrc   # 如果使用 zsh
+```
+
+驗證安裝：
+
+```bash
+rm --version
+```
+
+---
+
+### 方法一：手動使用別名
 
 這種方法最安全，不會覆蓋系統原生的 `rm` 命令，需要時仍可使用 `/bin/rm` 存取原始命令。
 
@@ -50,7 +86,7 @@ rm --version
 
 **提示**：如果需要使用系統原生的 `rm` 命令，可以使用完整路徑 `/bin/rm` 或用反斜線 `\rm`。
 
-### 方法二：複製到 PATH 目錄
+### 方法二：手動複製到 PATH 目錄
 
 如果你想讓 `better-rm` 可以直接執行（不只是透過 `rm` 別名），可以將它複製到 PATH 目錄：
 
