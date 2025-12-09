@@ -160,27 +160,13 @@ install() {
     echo -e "${GREEN}✓${NC} better-rm 已安裝完成並加入到 shell 設定檔"
     echo -e "${GREEN}✓${NC} better-rm installed and added to shell config"
     echo ""
-    
-    # 立即套用 alias 到目前的 shell session
-    # Apply alias immediately to current shell session
-    echo -e "${YELLOW}正在立即啟用 better-rm...${NC}"
-    echo -e "${YELLOW}Activating better-rm immediately...${NC}"
+    echo -e "${YELLOW}請執行以下命令立即啟用 better-rm (不需要重啟終端機)：${NC}"
+    echo -e "${YELLOW}Run this command to activate better-rm immediately (no restart needed):${NC}"
     echo ""
-    
-    # 輸出 alias 命令供使用者執行
-    # Output alias command for user to execute
-    cat << EOF
-
-請複製並執行以下命令以立即啟用 better-rm：
-Please copy and run the following command to activate better-rm immediately:
-
-    eval "alias rm='$INSTALL_DIR/better-rm'"
-
-或者重新開啟終端機，別名會自動生效
-Or open a new terminal, and the alias will be active automatically
-
-EOF
-    
+    echo -e "    ${GREEN}alias rm='$INSTALL_DIR/better-rm'${NC}"
+    echo ""
+    echo "或者重新開啟終端機 / Or open a new terminal"
+    echo ""
     echo "================================================"
     echo ""
     echo "驗證與使用 (Verification and Usage):"
