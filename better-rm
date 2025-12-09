@@ -293,9 +293,11 @@ move_to_trash() {
     elif [ -d "$source" ] && [ ! -L "$source" ]; then
         # 如果是目錄，計算目錄內容的 hash
         # If it's a directory, calculate hash of directory contents
-        file_hash=$(find "$source" -type f -exec md5sum {} \; 2>/dev/null | sort | md5sum | cut -d' ' -f1)
+        # 使用 -print0 和 sort -z 以安全處理特殊字元檔名
+        # Use -print0 and sort -z to safely handle filenames with special characters
+        file_hash=$(find "$source" -type f -print0 2>/dev/null | sort -z | xargs -0 md5sum 2>/dev/null | md5sum | cut -d' ' -f1)
         if [ -z "$file_hash" ]; then
-            file_hash=$(find "$source" -type f -exec sha256sum {} \; 2>/dev/null | sort | sha256sum | cut -d' ' -f1)
+            file_hash=$(find "$source" -type f -print0 2>/dev/null | sort -z | xargs -0 sha256sum 2>/dev/null | sha256sum | cut -d' ' -f1)
         fi
     fi
     
@@ -305,9 +307,9 @@ move_to_trash() {
         file_hash="nohash"
     fi
     
-    # 生成刪除時間戳記
-    # Generate deletion timestamp
-    local timestamp=$(date +%Y%m%d_%H%M%S)
+    # 生成刪除時間戳記（包含奈秒以避免碰撞）
+    # Generate deletion timestamp (with nanoseconds to avoid collisions)
+    local timestamp=$(date +%Y%m%d_%H%M%S_%N)
     
     # 目標路徑，加上時間戳記和 hash
     # Target path with timestamp and hash
