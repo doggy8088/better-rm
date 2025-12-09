@@ -295,9 +295,11 @@ move_to_trash() {
         # If it's a directory, calculate hash of directory contents
         # 使用 -print0 和 sort -z 以安全處理特殊字元檔名
         # Use -print0 and sort -z to safely handle filenames with special characters
-        file_hash=$(find "$source" -type f -print0 2>/dev/null | sort -z | xargs -0 md5sum 2>/dev/null | md5sum | cut -d' ' -f1)
+        # 使用 -r 選項以正確處理空目錄
+        # Use -r option to correctly handle empty directories
+        file_hash=$(find "$source" -type f -print0 2>/dev/null | sort -z | xargs -0 -r md5sum 2>/dev/null | md5sum | cut -d' ' -f1)
         if [ -z "$file_hash" ]; then
-            file_hash=$(find "$source" -type f -print0 2>/dev/null | sort -z | xargs -0 sha256sum 2>/dev/null | sha256sum | cut -d' ' -f1)
+            file_hash=$(find "$source" -type f -print0 2>/dev/null | sort -z | xargs -0 -r sha256sum 2>/dev/null | sha256sum | cut -d' ' -f1)
         fi
     fi
     
