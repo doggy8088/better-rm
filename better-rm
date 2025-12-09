@@ -213,7 +213,7 @@ EOF
 # 顯示版本資訊
 # Display version information
 show_version() {
-    echo "better-rm 1.0.0"
+    echo "better-rm 1.1.0"
     echo "更安全的 rm 命令 - 將檔案移至垃圾桶而非永久刪除"
     echo "A safer rm command - moves files to trash instead of permanent deletion"
 }
