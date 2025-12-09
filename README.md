@@ -2,54 +2,6 @@
 
 給你一個更好、更安全的 `rm` 命令
 
-## ⚠️ 重要免責聲明 / Important Disclaimer
-
-**使用本工具前請務必詳讀以下聲明：**
-
-🔴 **本工具僅提供基本的安全防護層，不能取代完整的備份策略**
-- 此工具將檔案移至垃圾桶，但垃圾桶仍在同一個檔案系統上
-- 硬碟故障、系統損壞、意外格式化等情況仍會導致資料永久遺失
-- **請務必定期備份重要資料到外部儲存裝置或雲端服務**
-
-🔴 **本工具按「現況」提供，不提供任何明示或暗示的保證**
-- 作者不對使用本工具造成的任何資料遺失或損害負責
-- 本工具可能存在未知的 bug 或相容性問題
-- 使用者需自行承擔使用風險
-
-🔴 **本工具不應在生產環境或關鍵系統上使用，除非您完全了解其運作方式**
-- 建議先在測試環境中充分測試
-- 了解垃圾桶機制的限制（如磁碟空間、跨檔案系統移動等）
-- 確保您知道如何使用原生 `rm` 命令（`/bin/rm` 或 `\rm`）
-
-🔴 **垃圾桶不會自動清理，需要定期手動管理**
-- 垃圾桶會持續佔用磁碟空間
-- 建議定期檢查和清理垃圾桶內容
-- 長期累積可能導致磁碟空間不足
-
-**English Version:**
-
-🔴 **This tool provides only basic safety protection and CANNOT replace a complete backup strategy**
-- Files are moved to trash, but the trash is still on the same filesystem
-- Hard drive failure, system corruption, or accidental formatting can still cause permanent data loss
-- **Always maintain regular backups of important data to external storage or cloud services**
-
-🔴 **This tool is provided "AS IS" without any warranties, express or implied**
-- The author is not responsible for any data loss or damage caused by using this tool
-- This tool may contain unknown bugs or compatibility issues
-- Users assume all risks associated with its use
-
-🔴 **This tool should NOT be used in production or critical systems unless you fully understand how it works**
-- Test thoroughly in a non-production environment first
-- Understand the limitations of the trash mechanism (disk space, cross-filesystem moves, etc.)
-- Ensure you know how to use the native `rm` command (`/bin/rm` or `\rm`)
-
-🔴 **The trash is NOT automatically cleaned and requires manual management**
-- Trash continuously occupies disk space
-- Regularly check and clean trash contents
-- Long-term accumulation may lead to insufficient disk space
-
----
-
 ## 專案簡介
 
 `better-rm` 是一個 Linux/Unix 下的 `rm` 命令替代方案，主要目的是防止誤刪重要檔案與目錄。與傳統的 `rm` 命令不同，`better-rm` 不會永久刪除檔案，而是將檔案移至垃圾桶目錄，讓你有機會救回誤刪的檔案。
@@ -560,6 +512,53 @@ docker run -v $(pwd):/app ubuntu:latest bash /app/test-better-rm.sh
 ## 聯絡方式
 
 如有任何問題或建議，歡迎透過 GitHub Issues 與我們聯繫。
+
+---
+## ⚠️ 重要免責聲明 / Important Disclaimer
+
+**使用本工具前請務必詳讀以下聲明：**
+
+🔴 **本工具僅提供基本的安全防護層，不能取代完整的備份策略**
+- 此工具將檔案移至垃圾桶，但垃圾桶仍在同一個檔案系統上
+- 硬碟故障、系統損壞、意外格式化等情況仍會導致資料永久遺失
+- **請務必定期備份重要資料到外部儲存裝置或雲端服務**
+
+🔴 **本工具按「現況」提供，不提供任何明示或暗示的保證**
+- 作者不對使用本工具造成的任何資料遺失或損害負責
+- 本工具可能存在未知的 bug 或相容性問題
+- 使用者需自行承擔使用風險
+
+🔴 **本工具不應在生產環境或關鍵系統上使用，除非您完全了解其運作方式**
+- 建議先在測試環境中充分測試
+- 了解垃圾桶機制的限制（如磁碟空間、跨檔案系統移動等）
+- 確保您知道如何使用原生 `rm` 命令（`/bin/rm` 或 `\rm`）
+
+🔴 **垃圾桶不會自動清理，需要定期手動管理**
+- 垃圾桶會持續佔用磁碟空間
+- 建議定期檢查和清理垃圾桶內容
+- 長期累積可能導致磁碟空間不足
+
+**English Version:**
+
+🔴 **This tool provides only basic safety protection and CANNOT replace a complete backup strategy**
+- Files are moved to trash, but the trash is still on the same filesystem
+- Hard drive failure, system corruption, or accidental formatting can still cause permanent data loss
+- **Always maintain regular backups of important data to external storage or cloud services**
+
+🔴 **This tool is provided "AS IS" without any warranties, express or implied**
+- The author is not responsible for any data loss or damage caused by using this tool
+- This tool may contain unknown bugs or compatibility issues
+- Users assume all risks associated with its use
+
+🔴 **This tool should NOT be used in production or critical systems unless you fully understand how it works**
+- Test thoroughly in a non-production environment first
+- Understand the limitations of the trash mechanism (disk space, cross-filesystem moves, etc.)
+- Ensure you know how to use the native `rm` command (`/bin/rm` or `\rm`)
+
+🔴 **The trash is NOT automatically cleaned and requires manual management**
+- Trash continuously occupies disk space
+- Regularly check and clean trash contents
+- Long-term accumulation may lead to insufficient disk space
 
 ---
 
