@@ -421,6 +421,30 @@ find ~/.Trash -mtime +30 -delete
 - [ ] 支援更多自訂保護規則
 - [ ] 加入設定檔支援
 
+## 測試
+
+本專案包含完整的測試腳本，可在容器環境下測試所有功能：
+
+```bash
+# 執行測試
+./test-better-rm.sh
+
+# 在 Docker 容器中測試
+docker run -v $(pwd):/app ubuntu:latest bash /app/test-better-rm.sh
+```
+
+測試涵蓋：
+- ✅ 基本檔案與目錄刪除
+- ✅ 特殊字元檔名處理
+- ✅ 時間戳記與內容 Hash
+- ✅ 刪除日誌功能
+- ✅ 受保護目錄
+- ✅ 快速連續刪除
+- ✅ 符號連結處理
+- ✅ 命令參數選項
+
+詳細測試說明請參考 [TEST_README.md](TEST_README.md)
+
 ## 貢獻
 
 歡迎提交 Issue 和 Pull Request！

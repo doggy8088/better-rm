@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deletion log file (`.deletion_log`) in TRASH_DIR that records all deletion operations
   - Logs timestamp, original path, trash path, hash, and file type for each deletion
   - Format: `TIMESTAMP | ORIGINAL_PATH | TRASH_PATH | HASH | FILE_TYPE`
+- Comprehensive test script (`test-better-rm.sh`) for validating all features
+  - 28 test cases covering all functionality
+  - Container-compatible for CI/CD integration
+  - Detailed test documentation in TEST_README.md
 
 ### Changed
 - Trashed files now always include timestamp and hash suffix (previously only added on conflicts)
