@@ -63,6 +63,43 @@ success_msg() {
     echo -e "${GREEN}$1${NC}"
 }
 
+# 記錄刪除操作到日誌檔案
+# Log deletion operation to log file
+log_deletion() {
+    local original_path="$1"
+    local trash_path="$2"
+    local file_hash="$3"
+    local timestamp="$4"
+    local log_file="$TRASH_DIR/.deletion_log"
+    
+    # 確保日誌檔案存在
+    # Ensure log file exists
+    if [ ! -f "$log_file" ]; then
+        {
+            echo "# Better-RM Deletion Log"
+            echo "# 更好的 RM 刪除日誌"
+            echo "# Format: TIMESTAMP | ORIGINAL_PATH | TRASH_PATH | HASH | FILE_TYPE"
+            echo "# 格式：時間戳記 | 原始路徑 | 垃圾桶路徑 | 雜湊值 | 檔案類型"
+            echo "# =============================================================================="
+        } > "$log_file" 2>/dev/null
+    fi
+    
+    # 判斷檔案類型
+    # Determine file type
+    local file_type="unknown"
+    if [ -d "$trash_path" ]; then
+        file_type="directory"
+    elif [ -L "$trash_path" ]; then
+        file_type="symlink"
+    elif [ -f "$trash_path" ]; then
+        file_type="file"
+    fi
+    
+    # 記錄刪除操作
+    # Log the deletion operation
+    echo "$timestamp | $original_path | $trash_path | $file_hash | $file_type" >> "$log_file" 2>/dev/null
+}
+
 # 正規化路徑函式
 # Normalize path function
 normalize_path() {
@@ -321,6 +358,10 @@ move_to_trash() {
     # 移動檔案到垃圾桶
     # Move file to trash
     if mv "$source" "$target" 2>/dev/null; then
+        # 記錄刪除操作到日誌
+        # Log the deletion operation
+        log_deletion "$abs_path" "$target" "$file_hash" "$timestamp"
+        
         if [ "$verbose" = "1" ]; then
             success_msg "已移除 '$source' (moved to trash: $target)"
         fi

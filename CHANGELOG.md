@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MD5 hash calculation for file content (with SHA256 fallback)
 - Directory hash calculation based on all contained files
 - Nanosecond-precision timestamps to prevent filename collisions during rapid deletions
+- Deletion log file (`.deletion_log`) in TRASH_DIR that records all deletion operations
+  - Logs timestamp, original path, trash path, hash, and file type for each deletion
+  - Format: `TIMESTAMP | ORIGINAL_PATH | TRASH_PATH | HASH | FILE_TYPE`
 
 ### Changed
 - Trashed files now always include timestamp and hash suffix (previously only added on conflicts)

@@ -250,14 +250,46 @@ TRASH_DIR=/tmp/my-trash rm file.txt
 - 方便日後開發還原功能
 - 避免不同路徑下同名檔案的衝突
 
-### 檔案名稱衝突處理
+### 檔案名稱格式
 
-如果垃圾桶中已經存在相同路徑的檔案，`better-rm` 會自動在檔案名稱後加上時間戳記，例如：
+從 v1.1.0 開始，垃圾桶中的檔案名稱會自動加上時間戳記和內容雜湊值：
 
 ```
-~/.Trash/home/user/file.txt
-~/.Trash/home/user/file.txt_20231209_143022
+原始檔案: file.txt
+垃圾桶中: file.txt__20251209_143052_123456789__e59ff97941044f85df5297e1c302d260
+格式說明: filename__YYYYMMDD_HHMMSS_NNNNNNNNN__hash
 ```
+
+這樣的設計有以下好處：
+- 時間戳記包含奈秒精度，避免快速刪除時的檔名衝突
+- 內容雜湊值可用於識別檔案內容，方便重複檔案的管理
+- 可追蹤檔案的刪除時間
+
+### 刪除日誌
+
+`better-rm` 會在垃圾桶目錄中維護一個 `.deletion_log` 檔案，記錄所有刪除操作：
+
+```bash
+# 查看刪除日誌
+cat ~/.Trash/.deletion_log
+```
+
+日誌格式：
+```
+TIMESTAMP | ORIGINAL_PATH | TRASH_PATH | HASH | FILE_TYPE
+```
+
+範例：
+```
+20251209_084530_429345278 | /home/user/file.txt | /home/user/.Trash/.../file.txt__...__hash | d6eb320... | file
+20251209_084547_505346836 | /home/user/mydir | /home/user/.Trash/.../mydir__...__hash | c55e1b8... | directory
+```
+
+這個日誌可以幫助你：
+- 追蹤所有刪除的檔案
+- 找出特定檔案的刪除時間
+- 確認檔案在垃圾桶中的位置
+- 根據內容雜湊值找出重複的檔案
 
 ### 自訂垃圾桶位置
 
