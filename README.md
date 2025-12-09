@@ -2,6 +2,54 @@
 
 給你一個更好、更安全的 `rm` 命令
 
+## ⚠️ 重要免責聲明 / Important Disclaimer
+
+**使用本工具前請務必詳讀以下聲明：**
+
+🔴 **本工具僅提供基本的安全防護層，不能取代完整的備份策略**
+- 此工具將檔案移至垃圾桶，但垃圾桶仍在同一個檔案系統上
+- 硬碟故障、系統損壞、意外格式化等情況仍會導致資料永久遺失
+- **請務必定期備份重要資料到外部儲存裝置或雲端服務**
+
+🔴 **本工具按「現況」提供，不提供任何明示或暗示的保證**
+- 作者不對使用本工具造成的任何資料遺失或損害負責
+- 本工具可能存在未知的 bug 或相容性問題
+- 使用者需自行承擔使用風險
+
+🔴 **本工具不應在生產環境或關鍵系統上使用，除非您完全了解其運作方式**
+- 建議先在測試環境中充分測試
+- 了解垃圾桶機制的限制（如磁碟空間、跨檔案系統移動等）
+- 確保您知道如何使用原生 `rm` 命令（`/bin/rm` 或 `\rm`）
+
+🔴 **垃圾桶不會自動清理，需要定期手動管理**
+- 垃圾桶會持續佔用磁碟空間
+- 建議定期檢查和清理垃圾桶內容
+- 長期累積可能導致磁碟空間不足
+
+**English Version:**
+
+🔴 **This tool provides only basic safety protection and CANNOT replace a complete backup strategy**
+- Files are moved to trash, but the trash is still on the same filesystem
+- Hard drive failure, system corruption, or accidental formatting can still cause permanent data loss
+- **Always maintain regular backups of important data to external storage or cloud services**
+
+🔴 **This tool is provided "AS IS" without any warranties, express or implied**
+- The author is not responsible for any data loss or damage caused by using this tool
+- This tool may contain unknown bugs or compatibility issues
+- Users assume all risks associated with its use
+
+🔴 **This tool should NOT be used in production or critical systems unless you fully understand how it works**
+- Test thoroughly in a non-production environment first
+- Understand the limitations of the trash mechanism (disk space, cross-filesystem moves, etc.)
+- Ensure you know how to use the native `rm` command (`/bin/rm` or `\rm`)
+
+🔴 **The trash is NOT automatically cleaned and requires manual management**
+- Trash continuously occupies disk space
+- Regularly check and clean trash contents
+- Long-term accumulation may lead to insufficient disk space
+
+---
+
 ## 專案簡介
 
 `better-rm` 是一個 Linux/Unix 下的 `rm` 命令替代方案，主要目的是防止誤刪重要檔案與目錄。與傳統的 `rm` 命令不同，`better-rm` 不會永久刪除檔案，而是將檔案移至垃圾桶目錄，讓你有機會救回誤刪的檔案。
@@ -312,7 +360,51 @@ mv ~/.Trash/home/user/projects/myapp/file.txt /home/user/projects/myapp/
 2. **磁碟空間**：垃圾桶會佔用磁碟空間，需要定期清理。
 3. **權限問題**：如果你沒有權限移動某個檔案，操作會失敗。
 
-## 安全性考量
+## 安全性考量 / Security Considerations
+
+### ⚠️ 使用限制與風險 / Limitations and Risks
+
+**重要：請在使用前充分了解以下限制**
+
+1. **不是完整備份解決方案**
+   - 垃圾桶機制僅提供基本的誤刪保護
+   - 無法防護硬碟故障、系統故障、惡意軟體等風險
+   - 重要資料必須有獨立的備份策略
+
+2. **磁碟空間限制**
+   - 垃圾桶會持續佔用磁碟空間
+   - 可能導致磁碟空間不足的問題
+   - 需要定期手動清理
+
+3. **跨檔案系統限制**
+   - 跨不同檔案系統的移動會較慢（需要複製而非移動）
+   - 可能會遇到權限問題
+
+4. **無保證性**
+   - 本工具按「現況」提供，無任何保證
+   - 作者不對任何資料遺失負責
+   - 使用者需自行承擔風險
+
+**Important: Please fully understand the following limitations before use**
+
+1. **Not a Complete Backup Solution**
+   - Trash mechanism only provides basic accidental deletion protection
+   - Cannot protect against drive failure, system failure, malware, etc.
+   - Important data must have an independent backup strategy
+
+2. **Disk Space Limitation**
+   - Trash continuously occupies disk space
+   - May cause disk space shortage
+   - Requires regular manual cleanup
+
+3. **Cross-Filesystem Limitation**
+   - Moving across different filesystems is slower (requires copy instead of move)
+   - May encounter permission issues
+
+4. **No Warranty**
+   - This tool is provided "AS IS" without any warranty
+   - Author is not responsible for any data loss
+   - Users assume all risks
 
 ### 為什麼需要 better-rm？
 
@@ -415,4 +507,28 @@ find ~/.Trash -mtime +30 -delete
 
 ---
 
-**警告：本工具不能取代完整的備份策略。請務必定期備份重要資料！**
+## ⚠️ 再次提醒 / Final Reminder
+
+**本工具不能也不應該取代完整的備份策略！**
+
+- ✅ **請做好**：定期備份重要資料到外部儲存或雲端
+- ✅ **請做好**：了解工具的限制和風險
+- ✅ **請做好**：在測試環境先充分測試
+- ✅ **請做好**：定期清理垃圾桶
+- ❌ **請勿**：依賴垃圾桶作為唯一的資料保護措施
+- ❌ **請勿**：在關鍵生產系統上未經測試就使用
+- ❌ **請勿**：假設垃圾桶中的資料永遠安全
+
+**This tool CANNOT and SHOULD NOT replace a complete backup strategy!**
+
+- ✅ **DO**: Regularly backup important data to external storage or cloud
+- ✅ **DO**: Understand the tool's limitations and risks
+- ✅ **DO**: Test thoroughly in a test environment first
+- ✅ **DO**: Regularly clean the trash
+- ❌ **DON'T**: Rely on the trash as your only data protection measure
+- ❌ **DON'T**: Use in critical production systems without testing
+- ❌ **DON'T**: Assume data in trash is permanently safe
+
+**使用本工具即表示您已閱讀、理解並同意上述所有免責聲明和限制。**
+
+**By using this tool, you acknowledge that you have read, understood, and agreed to all the disclaimers and limitations stated above.**
