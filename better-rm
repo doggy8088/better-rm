@@ -278,16 +278,41 @@ move_to_trash() {
         return 1
     }
     
-    # 目標路徑
-    # Target path
-    local target="$TRASH_DIR$abs_path"
-    
-    # 如果目標已存在，加上時間戳記
-    # If target exists, add timestamp
-    if [ -e "$target" ]; then
-        local timestamp=$(date +%Y%m%d_%H%M%S)
-        target="${target}_${timestamp}"
+    # 計算檔案內容的 hash 值
+    # Calculate hash of file content
+    local file_hash=""
+    if [ -f "$source" ] && [ ! -L "$source" ]; then
+        # 如果是普通檔案（非符號連結），計算 hash
+        # If it's a regular file (not a symlink), calculate hash
+        file_hash=$(md5sum "$source" 2>/dev/null | cut -d' ' -f1)
+        if [ -z "$file_hash" ]; then
+            # 如果 md5sum 失敗，使用 sha256sum
+            # If md5sum fails, use sha256sum
+            file_hash=$(sha256sum "$source" 2>/dev/null | cut -d' ' -f1)
+        fi
+    elif [ -d "$source" ] && [ ! -L "$source" ]; then
+        # 如果是目錄，計算目錄內容的 hash
+        # If it's a directory, calculate hash of directory contents
+        file_hash=$(find "$source" -type f -exec md5sum {} \; 2>/dev/null | sort | md5sum | cut -d' ' -f1)
+        if [ -z "$file_hash" ]; then
+            file_hash=$(find "$source" -type f -exec sha256sum {} \; 2>/dev/null | sort | sha256sum | cut -d' ' -f1)
+        fi
     fi
+    
+    # 如果無法計算 hash，使用預設值
+    # If hash calculation fails, use default value
+    if [ -z "$file_hash" ]; then
+        file_hash="nohash"
+    fi
+    
+    # 生成刪除時間戳記
+    # Generate deletion timestamp
+    local timestamp=$(date +%Y%m%d_%H%M%S)
+    
+    # 目標路徑，加上時間戳記和 hash
+    # Target path with timestamp and hash
+    local target="$TRASH_DIR$abs_path"
+    target="${target}__${timestamp}__${file_hash}"
     
     # 移動檔案到垃圾桶
     # Move file to trash
