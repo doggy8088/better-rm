@@ -374,6 +374,26 @@ else
     test_fail "未正確保護 /home"
 fi
 
+test_item "拒絕刪除 /mnt 與第一層掛載根"
+mnt_protected=true
+for protected_mnt_path in /mnt /mnt/c /mnt/../mnt/wsl; do
+    if ! "$BETTER_RM" -rf "$protected_mnt_path" 2>&1 | grep -q "拒絕刪除受保護的目錄"; then
+        mnt_protected=false
+    fi
+done
+if [ "$mnt_protected" = true ]; then
+    test_pass "正確保護 /mnt 與第一層掛載根"
+else
+    test_fail "未正確保護 /mnt 掛載根"
+fi
+
+test_item "允許處理 /mnt 掛載根內的一般路徑"
+if "$BETTER_RM" -f /mnt/c/project/nonexistent 2>&1 | grep -q "拒絕刪除受保護的目錄"; then
+    test_fail "錯誤封鎖 /mnt 掛載根內的一般路徑"
+else
+    test_pass "未封鎖 /mnt 掛載根內的一般路徑"
+fi
+
 test_item "拒絕刪除 .git 目錄"
 setup
 cd "$TEST_WORK_DIR"

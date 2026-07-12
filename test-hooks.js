@@ -23,6 +23,9 @@ const blocked = [
   'sudo -u root rm -rf /var',
   'env LC_ALL=C rm -rf /boot',
   'SAFE=1 rm -rf /opt',
+  'rm -rf /mnt',
+  'rm -rf /mnt/c',
+  'rm -rf /mnt/../mnt/wsl',
   'command rm -r ~/.git',
   'rm -rf .git',
   'rm -rf .*',
@@ -33,11 +36,19 @@ const blocked = [
   'echo ok && rm -rf /usr',
 ];
 
+const allowed = [
+  'rm -rf build',
+  'rm file.txt',
+  'rm -rf /mnt/c/project',
+  'echo rm -rf /',
+  'better-rm -r tmp',
+];
+
 for (const command of blocked) {
   const result = evaluate(claude(command), env);
   assert.equal(result?.hookSpecificOutput?.permissionDecision, 'deny', command);
 }
-for (const command of ['rm -rf build', 'rm file.txt', 'echo rm -rf /', 'better-rm -r tmp']) {
+for (const command of allowed) {
   assert.equal(evaluate(claude(command), env), null, command);
 }
 
@@ -67,7 +78,7 @@ for (const command of blocked) {
   assert.match(result.deny_reason, /Refused to remove protected directory/, command);
 }
 
-for (const command of ['rm -rf build', 'rm file.txt', 'echo rm -rf /', 'better-rm -r tmp']) {
+for (const command of allowed) {
   assert.equal(evaluate(antigravity(command), env).allow_tool, true, command);
 }
 
@@ -91,7 +102,7 @@ for (const command of blocked) {
   assert.match(result.user_message, /Refused to remove protected directory/, command);
 }
 
-for (const command of ['rm -rf build', 'rm file.txt', 'echo rm -rf /', 'better-rm -r tmp']) {
+for (const command of allowed) {
   assert.equal(evaluate(cursor(command), env).permission, 'allow', command);
 }
 
@@ -115,8 +126,8 @@ for (const command of blocked) {
   assert.match(result.reason, /Refused to remove protected directory/, command);
 }
 
-for (const command of ['rm -rf build', 'rm file.txt', 'echo rm -rf /', 'better-rm -r tmp']) {
+for (const command of allowed) {
   assert.equal(evaluate(grok(command), env).decision, 'allow', command);
 }
 
-console.log(`Hooks 測試通過 / Hook tests passed: ${blocked.length * 4 + 18}`);
+console.log(`Hooks 測試通過 / Hook tests passed: ${blocked.length * 4 + allowed.length * 4 + 2}`);

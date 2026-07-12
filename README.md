@@ -268,6 +268,7 @@ export TRASH_DIR="$HOME/MyTrash"
 - `/etc` - 系統設定檔
 - `/home` - 使用者主目錄根目錄
 - `/lib`, `/lib64` - 系統函式庫
+- `/mnt` 與其第一層掛載根目錄 - 掛載磁碟（例如 WSL 的 `/mnt/c`、`/mnt/d`、`/mnt/wsl`、`/mnt/wslg`）
 - `/opt` - 第三方軟體
 - `/proc` - 程序資訊
 - `/root` - root 使用者的家目錄
@@ -283,6 +284,9 @@ export TRASH_DIR="$HOME/MyTrash"
 ### 專案目錄
 
 - `.git` - Git 版本控制目錄（任何位置的 .git 目錄）
+
+`/mnt` 的保護只涵蓋掛載根本身；仍可正常移除 `/mnt/c/project/tmp` 等掛載磁碟內的項目。
+WSL 可透過 `/etc/wsl.conf` 更改 Windows 磁碟的 automount root；非預設位置不在本規則的保護範圍內。
 
 ## Coding agent hooks
 

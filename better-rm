@@ -19,6 +19,7 @@ PROTECTED_DIRS=(
     "/home"
     "/lib"
     "/lib64"
+    "/mnt"
     "/opt"
     "/proc"
     "/root"
@@ -209,7 +210,19 @@ is_protected() {
             return 0  # 是受保護的目錄
         fi
     done
-    
+
+    # 保護 /mnt 本身及其第一層掛載根（例如 WSL 的 /mnt/c），但允許操作掛載點內的項目
+    # Protect /mnt and its immediate mount roots (for example /mnt/c on WSL), while allowing items inside them
+    local candidate remainder
+    for candidate in "$real_path" "$norm_path"; do
+        if [[ "$candidate" = /mnt/* ]]; then
+            remainder="${candidate#/mnt/}"
+            if [ -n "$remainder" ] && [[ "$remainder" != */* ]]; then
+                return 0
+            fi
+        fi
+    done
+
     # 檢查是否符合受保護的模式
     # Check if matches protected patterns
     local basename_path=$(basename "$real_path")

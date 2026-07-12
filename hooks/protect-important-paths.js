@@ -8,7 +8,7 @@ const os = require('os');
 const path = require('path');
 
 const SYSTEM_DIRS = [
-  '/', '/bin', '/boot', '/dev', '/etc', '/home', '/lib', '/lib64', '/opt',
+  '/', '/bin', '/boot', '/dev', '/etc', '/home', '/lib', '/lib64', '/mnt', '/opt',
   '/proc', '/root', '/sbin', '/sys', '/usr', '/var',
 ];
 
@@ -76,6 +76,17 @@ function protectedReason(target, cwd, home, extraDirs = []) {
   const exactDirs = [...SYSTEM_DIRS, home, ...extraDirs].map((item) => path.resolve(item));
 
   if (exactDirs.includes(normalized)) return normalized;
+
+  // Protect first-level mount roots under /mnt (such as /mnt/c), while allowing items inside them.
+  // 保護 /mnt 的第一層掛載根（如 /mnt/c），但允許操作掛載點內的項目（如 /mnt/c/project）。
+  const mntRelative = path.relative('/mnt', normalized);
+  if (
+    mntRelative &&
+    !mntRelative.startsWith('..') &&
+    !path.isAbsolute(mntRelative) &&
+    !mntRelative.includes(path.sep)
+  ) return normalized;
+
   if (normalized === '.git' || normalized.endsWith(`${path.sep}.git`)) return normalized;
 
   if (/(^|[\\/])\.git([\\/]|$)/.test(normalized)) return normalized;
