@@ -130,4 +130,11 @@ for (const command of allowed) {
   assert.equal(evaluate(grok(command), env).decision, 'allow', command);
 }
 
-console.log(`Hooks 測試通過 / Hook tests passed: ${blocked.length * 4 + allowed.length * 4 + 2}`);
+// Invalid hook input must exit 2: in Claude Code only exit 2 blocks the tool
+// call; any other non-zero exit is a non-blocking error and the command runs.
+// 無效輸入必須以 exit 2 結束：Claude Code 只有 exit 2 會阻擋工具呼叫。
+const { spawnSync } = require('child_process');
+const invalidInput = spawnSync(process.execPath, [require.resolve('./hooks/protect-important-paths')], { input: 'not-json', encoding: 'utf8' });
+assert.equal(invalidInput.status, 2, 'invalid input must fail closed with exit 2');
+
+console.log(`Hooks 測試通過 / Hook tests passed: ${blocked.length * 4 + allowed.length * 4 + 3}`);
