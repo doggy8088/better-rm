@@ -34,6 +34,8 @@ const blocked = [
   'rmdir /home/tester',
   'rm -rf /workspace/secrets',
   'echo ok && rm -rf /usr',
+  'echo ok\nrm -rf /usr',
+  'ls -la | head -1\nrm -rf .git',
 ];
 
 const allowed = [
@@ -42,6 +44,7 @@ const allowed = [
   'rm -rf /mnt/c/project',
   'echo rm -rf /',
   'better-rm -r tmp',
+  'echo hi\nrm -rf build',
 ];
 
 for (const command of blocked) {

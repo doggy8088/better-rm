@@ -29,11 +29,11 @@ function shellWords(command) {
       else word += char;
     } else if (char === '"' || char === "'") {
       quote = char;
-    } else if (/\s/.test(char)) {
-      if (word) words.push(word), word = '';
     } else if (';&|\n'.includes(char)) {
       if (word) words.push(word), word = '';
       words.push(char);
+    } else if (/\s/.test(char)) {
+      if (word) words.push(word), word = '';
     } else {
       word += char;
     }
