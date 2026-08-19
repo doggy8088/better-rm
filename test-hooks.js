@@ -136,5 +136,6 @@ for (const command of allowed) {
 const { spawnSync } = require('child_process');
 const invalidInput = spawnSync(process.execPath, [require.resolve('./hooks/protect-important-paths')], { input: 'not-json', encoding: 'utf8' });
 assert.equal(invalidInput.status, 2, 'invalid input must fail closed with exit 2');
+assert.match(invalidInput.stderr, /Hook 輸入無效|Invalid hook input/, 'stderr must include denial reason');
 
-console.log(`Hooks 測試通過 / Hook tests passed: ${blocked.length * 4 + allowed.length * 4 + 3}`);
+console.log(`Hooks 測試通過 / Hook tests passed: ${blocked.length * 4 + allowed.length * 4 + 4}`);

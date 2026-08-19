@@ -224,7 +224,7 @@ async function main() {
     if (result) process.stdout.write(JSON.stringify(result));
   } catch (error) {
     console.error(`Hook 輸入無效，已拒絕工具呼叫 / Invalid hook input; tool call denied: ${error.message}`);
-    process.exit(2);
+    process.exitCode = 2;
   }
 }
 
