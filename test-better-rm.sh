@@ -115,7 +115,7 @@ echo ""
 test_title "測試 1: 版本與說明資訊"
 
 test_item "測試 --version 參數"
-if "$BETTER_RM" --version | grep -q "better-rm 1.5.0"; then
+if "$BETTER_RM" --version | grep -q "better-rm 1.6.0"; then
     test_pass "--version 顯示正確版本"
 else
     test_fail "--version 版本不正確"

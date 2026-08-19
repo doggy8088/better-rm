@@ -82,7 +82,7 @@ source ~/.bashrc  # 或 source ~/.zshrc
 rm --version
 ```
 
-應該會看到 `better-rm 1.5.0` 的版本資訊。
+應該會看到 `better-rm 1.6.0` 的版本資訊。
 
 **提示**：如果需要使用系統原生的 `rm` 命令，可以使用完整路徑 `/bin/rm` 或用反斜線 `\rm`。
 

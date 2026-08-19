@@ -28,7 +28,7 @@ NC='\033[0m' # No Color
 # 支援的 Coding Agent 清單（目前）
 # Supported coding agents list
 SUPPORTED_AGENTS=(claude codex cursor copilot antigravity qoder pi opencode grok)
-VERSION="1.5.0"
+VERSION="1.6.0"
 RELEASE_BASE_URL="https://github.com/doggy8088/better-rm/releases/latest/download"
 RELEASE_HOOK_ASSET_NAME="protect-important-paths.js"
 RELEASE_OPENCODE_PLUGIN_ASSET_NAME="opencode-protect-important-paths.ts"

@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- 現代化多語系產品形象單頁（Landing Page）與 GitHub Pages 自動部署工作流程。
+- 完整 SEO、OpenGraph 與 Twitter Card 標籤及 1200x630 社群分享縮圖。
+
+### Fixed
+- 修復 `hooks/protect-important-paths.js` 中換行符號未被當作命令分隔符號處理，導致多行指令（如 `echo ok\nrm -rf /usr`）繞過受保護路徑檢查的安全漏洞 ([#12](https://github.com/doggy8088/better-rm/pull/12))。
+- 修復 Hook 在輸入無效時回傳 exit code 2，確保 Claude Code 能正確阻擋危險操作。
+- 改用 `process.exitCode` 確保 stderr 訊息能在退出前正確輸出排空。
+
+### Changed
+- 更新 README 平台支援說明與維護者資訊。
+
+
+### Added
 - 1.5.0: Prepare release 1.5.0
 
 
