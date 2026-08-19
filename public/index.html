@@ -152,9 +152,9 @@ FORM: Modern developer product workstation, responsive bento layout, interactive
 
     .container {
       width: 100%;
-      max-width: 1240px;
+      max-width: 1300px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 28px;
     }
 
     /* ==========================================================================
@@ -373,8 +373,8 @@ FORM: Modern developer product workstation, responsive bento layout, interactive
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 48px;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 40px;
       align-items: center;
     }
 
@@ -578,21 +578,22 @@ FORM: Modern developer product workstation, responsive bento layout, interactive
 
     .terminal-title {
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
+      white-space: nowrap;
     }
 
     .terminal-actions-bar {
       background: var(--bg-surface-subtle);
-      padding: 10px 16px;
+      padding: 10px 14px;
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       border-bottom: 1px solid var(--border-subtle);
     }
 
     .term-preset-btn {
-      padding: 5px 10px;
+      padding: 5px 9px;
       background: var(--bg-surface-elevated);
       color: var(--text-main);
       border: 1px solid var(--border-subtle);
@@ -600,6 +601,7 @@ FORM: Modern developer product workstation, responsive bento layout, interactive
       font-family: var(--font-mono);
       font-size: 0.76rem;
       font-weight: 500;
+      white-space: nowrap;
       transition: all var(--transition-fast);
     }
 
@@ -610,19 +612,20 @@ FORM: Modern developer product workstation, responsive bento layout, interactive
     }
 
     .terminal-body {
-      padding: 18px;
+      padding: 18px 20px;
       font-family: var(--font-mono);
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       color: var(--term-text);
-      min-height: 290px;
-      max-height: 380px;
+      min-height: 310px;
+      max-height: 400px;
       overflow-y: auto;
       line-height: 1.55;
     }
 
     .term-line {
-      margin-bottom: 8px;
-      word-break: break-all;
+      margin-bottom: 6px;
+      word-break: normal;
+      overflow-wrap: anywhere;
     }
 
     .term-prompt {
