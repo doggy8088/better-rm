@@ -1604,6 +1604,14 @@ alias rm='better-rm'</pre>
           <div class="protected-desc" data-i18n="prot_mnt">掛載磁碟根目錄（含 WSL 磁碟根）</div>
         </div>
         <div class="protected-item">
+          <div class="protected-path">🛑 C:\, D:\, /c, /d</div>
+          <div class="protected-desc" data-i18n="prot_win_roots">Windows 磁碟機根目錄（含 Git Bash / MSYS）</div>
+        </div>
+        <div class="protected-item">
+          <div class="protected-path">🛑 C:\Windows, Program Files, Users</div>
+          <div class="protected-desc" data-i18n="prot_win_sys">Windows 系統、程式與使用者根目錄</div>
+        </div>
+        <div class="protected-item">
           <div class="protected-path">🛑 .git (任何位置)</div>
           <div class="protected-desc" data-i18n="prot_git">專案版本控制資料庫與歷史</div>
         </div>
@@ -1926,6 +1934,8 @@ alias rm='better-rm'</pre>
         prot_etc: '核心系統設定、開機及裝置檔案',
         prot_home: '使用者整個家目錄本體',
         prot_mnt: '掛載磁碟根目錄（含 WSL 磁碟根）',
+        prot_win_roots: 'Windows 磁碟機根目錄（含 Git Bash / MSYS / Cygwin）',
+        prot_win_sys: 'Windows 系統核心、程式與使用者根目錄',
         prot_git: '專案版本控制資料庫與歷史',
         prot_lib: '系統共享函式庫與第三方套件',
         prot_proc: '核心程序虛擬檔案與變動系統資料',
@@ -2056,6 +2066,8 @@ alias rm='better-rm'</pre>
         prot_etc: '核心系统配置、启动及设备文件',
         prot_home: '用户整个家目录本体',
         prot_mnt: '挂载磁盘根目录（含 WSL 磁盘根）',
+        prot_win_roots: 'Windows 驱动器根目录（含 Git Bash / MSYS / Cygwin）',
+        prot_win_sys: 'Windows 系统核心、程序与用户根目录',
         prot_git: '项目版本控制数据库与历史',
         prot_lib: '系统共享库与第三方软件包',
         prot_proc: '核心进程虚拟文件与变动系统数据',
@@ -2187,6 +2199,8 @@ alias rm='better-rm'</pre>
         prot_etc: 'Core configurations, boot, and device files',
         prot_home: 'Entire user home directory roots',
         prot_mnt: 'Mount roots (including WSL /mnt/c, /mnt/d)',
+        prot_win_roots: 'Windows drive roots (including Git Bash / MSYS / Cygwin)',
+        prot_win_sys: 'Windows system, Program Files, and User profile roots',
         prot_git: 'Git version control databases and histories',
         prot_lib: 'System libraries and third-party packages',
         prot_proc: 'Process virtual files and variable system data',
@@ -2318,6 +2332,8 @@ alias rm='better-rm'</pre>
         prot_etc: 'システム設定、ブート、デバイスファイル',
         prot_home: 'ユーザーのホームディレクトリ全体',
         prot_mnt: 'マウントディスクのルート (WSL /mnt/c 等)',
+        prot_win_roots: 'Windows ドライブルート（Git Bash / MSYS / Cygwin 含む）',
+        prot_win_sys: 'Windows システム、Program Files、ユーザーディレクトリ',
         prot_git: 'Git バージョン管理リポジトリ',
         prot_lib: 'システム共有ライブラリおよびパッケージ',
         prot_proc: 'プロセス仮想ファイルおよびシステムデータ',
@@ -2449,6 +2465,8 @@ alias rm='better-rm'</pre>
         prot_etc: '시스템 설정, 부팅 및 디바이스 파일',
         prot_home: '사용자 홈 디렉터리 전체',
         prot_mnt: '마운트 드라이브 루트 (WSL /mnt/c 등 포함)',
+        prot_win_roots: 'Windows 드라이브 루트 (Git Bash / MSYS / Cygwin 포함)',
+        prot_win_sys: 'Windows 시스템, Program Files 및 사용자 루트 디렉터리',
         prot_git: 'Git 버전 관리 데이터베이스 및 기록',
         prot_lib: '시스템 공유 라이브러리 및 패키지',
         prot_proc: '프로세스 가상 파일 및 시스템 데이터',
@@ -2580,6 +2598,8 @@ alias rm='better-rm'</pre>
         prot_etc: 'Tệp cấu hình, khởi động và thiết bị hệ thống',
         prot_home: 'Toàn bộ thư mục home của người dùng',
         prot_mnt: 'Thư mục gắn ổ đĩa (gồm /mnt/c trên WSL)',
+        prot_win_roots: 'Thư mục gốc ổ đĩa Windows (bao gồm Git Bash / MSYS / Cygwin)',
+        prot_win_sys: 'Thư mục hệ thống Windows, Program Files và thư mục người dùng',
         prot_git: 'Cơ sở dữ liệu quản lý phiên bản Git',
         prot_lib: 'Thư viện dùng chung và gói phần mềm',
         prot_proc: 'Tệp ảo tiến trình và dữ liệu động',
@@ -2711,6 +2731,8 @@ alias rm='better-rm'</pre>
         prot_etc: 'ไฟล์คอนฟิกูเรชันและการบูตระบบ',
         prot_home: 'โฟลเดอร์โฮมของผู้ใช้งานทั้งหมด',
         prot_mnt: 'โฟลเดอร์เมานต์ดิสก์ (รวมถึง WSL /mnt/c)',
+        prot_win_roots: 'รูทไดรฟ์ Windows (รวมถึง Git Bash / MSYS / Cygwin)',
+        prot_win_sys: 'ไดเรกทอรีระบบ Windows, Program Files และโฟลเดอร์ผู้ใช้',
         prot_git: 'ฐานข้อมูลและประวัติการพัฒนา Git',
         prot_lib: 'ไลบรารีของระบบและแพ็กเกจเสริม',
         prot_proc: 'ไฟล์ระบบเสมือนและข้อมูลการทำงาน',
@@ -2842,6 +2864,8 @@ alias rm='better-rm'</pre>
         prot_etc: 'Konfigurasi teras, but dan fail peranti',
         prot_home: 'Keseluruhan direktori home pengguna',
         prot_mnt: 'Titik lekapan cakera (termasuk /mnt/c WSL)',
+        prot_win_roots: 'Punca pemacu Windows (termasuk Git Bash / MSYS / Cygwin)',
+        prot_win_sys: 'Sistem Windows, Program Files dan direktori pengguna',
         prot_git: 'Pangkalan data kawalan versi Git',
         prot_lib: 'Pustaka sistem dan pakej pihak ketiga',
         prot_proc: 'Fail maya proses dan data dinamik sistem',
@@ -2973,6 +2997,8 @@ alias rm='better-rm'</pre>
         prot_etc: 'Konfigurasi sistem, boot, dan file perangkat',
         prot_home: 'Seluruh direktori home pengguna',
         prot_mnt: 'Titik mount disk (termasuk /mnt/c pada WSL)',
+        prot_win_roots: 'Root drive Windows (termasuk Git Bash / MSYS / Cygwin)',
+        prot_win_sys: 'Sistem Windows, Program Files, dan direktori pengguna',
         prot_git: 'Database repositori dan riwayat Git',
         prot_lib: 'Pustaka sistem dan paket pihak ketiga',
         prot_proc: 'File virtual proses dan data dinamis sistem',

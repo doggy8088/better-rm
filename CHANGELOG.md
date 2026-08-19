@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - 修復 `hooks/protect-important-paths.js` 中換行符號未被當作命令分隔符號處理，導致多行指令（如 `echo ok\nrm -rf /usr`）繞過受保護路徑檢查的安全漏洞 ([#12](https://github.com/doggy8088/better-rm/pull/12))。
+- 修復 `hooks/protect-important-paths.js` 在原生 Windows（Git Bash / MSYS / Cygwin）環境下 `/c/...` 與 `/cygdrive/c/...` 路徑未被正確轉為 Windows 磁碟機路徑解析而導致保護失效的問題，並增強 Windows 磁碟機根目錄（如 `C:\`、`D:\`）、系統目錄（`C:\Windows`、`C:\Program Files`、`C:\Users` 等）防護與不分大小寫比對 ([#14](https://github.com/doggy8088/better-rm/issues/14))。
 - 修復 Hook 在輸入無效時回傳 exit code 2，確保 Claude Code 能正確阻擋危險操作。
 - 改用 `process.exitCode` 確保 stderr 訊息能在退出前正確輸出排空。
 

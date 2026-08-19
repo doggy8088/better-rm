@@ -12,16 +12,56 @@ const SYSTEM_DIRS = [
   '/proc', '/root', '/sbin', '/sys', '/usr', '/var',
 ];
 
+function toWindowsDrivePath(value, isWindows = (process.platform === 'win32')) {
+  if (!isWindows || typeof value !== 'string') return value;
+  const driveMatch = /^([A-Za-z]):[\\/]*$/.exec(value);
+  if (driveMatch) return `${driveMatch[1].toUpperCase()}:\\`;
+  const match = /^\/(?:cygdrive\/)?([A-Za-z])(\/.*)?$/.exec(value);
+  if (!match) return value;
+  const rest = (match[2] || '').replace(/\//g, '\\');
+  return `${match[1].toUpperCase()}:${rest || '\\'}`;
+}
+
+function getSystemDirs(platform = process.platform, env = process.env) {
+  if (platform !== 'win32') return SYSTEM_DIRS;
+  const dirs = [...SYSTEM_DIRS];
+  const winDir = env.SystemRoot || env.windir || 'C:\\Windows';
+  dirs.push(winDir);
+  if (env.ProgramFiles) dirs.push(env.ProgramFiles);
+  if (env['ProgramFiles(x86)']) dirs.push(env['ProgramFiles(x86)']);
+  if (env.ProgramW6432) dirs.push(env.ProgramW6432);
+  if (env.ProgramData) dirs.push(env.ProgramData);
+  if (env.ALLUSERSPROFILE) dirs.push(env.ALLUSERSPROFILE);
+  const home = env.USERPROFILE || env.HOME || (typeof os.homedir === 'function' ? os.homedir() : '');
+  if (home) {
+    const winPath = path.win32 || path;
+    const usersDir = winPath.dirname(toWindowsDrivePath(home, true));
+    if (usersDir && !/^[A-Za-z]:\\?$/.test(usersDir)) {
+      dirs.push(usersDir);
+    }
+  }
+  return [...new Set(dirs)];
+}
+
 function shellWords(command) {
   const words = [];
   let word = '';
   let quote = '';
   let escaped = false;
 
-  for (const char of String(command || '')) {
+  const str = String(command || '');
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
     if (escaped) {
       word += char;
       escaped = false;
+    } else if (char === '\\' && quote === '"') {
+      const next = str[i + 1];
+      if ('$`"\\\n'.includes(next)) {
+        escaped = true;
+      } else {
+        word += char;
+      }
     } else if (char === '\\' && quote !== "'") {
       escaped = true;
     } else if (quote) {
@@ -45,21 +85,33 @@ function shellWords(command) {
 
 function expandHome(value, home) {
   if (value === '~') return home;
-  if (value.startsWith('~/')) return path.join(home, value.slice(2));
+  if (value.startsWith('~/') || value.startsWith('~\\')) return path.join(home, value.slice(2));
   if (value === '$HOME' || value === '${HOME}') return home;
-  if (value.startsWith('$HOME/')) return path.join(home, value.slice(6));
-  if (value.startsWith('${HOME}/')) return path.join(home, value.slice(8));
+  if (value.startsWith('$HOME/') || value.startsWith('$HOME\\')) return path.join(home, value.slice(6));
+  if (value.startsWith('${HOME}/') || value.startsWith('${HOME}\\')) return path.join(home, value.slice(8));
   return value;
 }
 
-function normalizedTarget(value, cwd, home) {
-  const expanded = expandHome(value.replace(/[\\/]+$/, '') || '/', home);
+function normalizedTarget(value, cwd, home, isWindows = (process.platform === 'win32')) {
+  let raw = value || '/';
+  if (/^[A-Za-z]:[\\/]*$/.test(raw)) {
+    raw = `${raw[0].toUpperCase()}:\\`;
+  } else {
+    raw = raw.replace(/[\\/]+$/, '') || '/';
+    if (/^[A-Za-z]:[\\/]*$/.test(raw)) {
+      raw = `${raw[0].toUpperCase()}:\\`;
+    }
+  }
+  const winPath = isWindows ? (path.win32 || path) : path;
+  const homeNorm = isWindows ? toWindowsDrivePath(home, isWindows) : home;
+  const expanded = toWindowsDrivePath(expandHome(raw, homeNorm), isWindows);
   if (/[*?\[\]{}]/.test(expanded)) return expanded;
-  return path.resolve(cwd, expanded);
+  return winPath.resolve(cwd, expanded);
 }
 
-function globCanMatchGit(value) {
-  const basename = path.basename(value);
+function globCanMatchGit(value, isWindows = (process.platform === 'win32')) {
+  const winPath = isWindows ? (path.win32 || path) : path;
+  const basename = winPath.basename(value);
   if (!/[*?\[\]{}]/.test(basename)) return false;
   const alternatives = basename.replace(/^\{(.+)\}$/, '$1').split(',');
   return alternatives.some((pattern) => {
@@ -71,11 +123,26 @@ function globCanMatchGit(value) {
   });
 }
 
-function protectedReason(target, cwd, home, extraDirs = []) {
-  const normalized = normalizedTarget(target, cwd, home);
-  const exactDirs = [...SYSTEM_DIRS, home, ...extraDirs].map((item) => path.resolve(item));
+function protectedReason(target, cwd, home, extraDirs = [], isWindows = (process.platform === 'win32'), env = process.env) {
+  const winPath = isWindows ? (path.win32 || path) : path;
+  const homeNorm = isWindows ? toWindowsDrivePath(home, isWindows) : home;
+  const normalized = normalizedTarget(target, cwd, homeNorm, isWindows);
+  const systemDirs = getSystemDirs(isWindows ? 'win32' : 'posix', env);
+  const exactDirs = [...systemDirs, homeNorm, ...extraDirs].map((item) => {
+    const converted = isWindows ? toWindowsDrivePath(item, isWindows) : item;
+    return winPath.resolve(converted);
+  });
 
-  if (exactDirs.includes(normalized)) return normalized;
+  const isMatch = (a, b) => {
+    if (!a || !b) return false;
+    return isWindows ? a.toLowerCase() === b.toLowerCase() : a === b;
+  };
+
+  if (exactDirs.some((dir) => isMatch(dir, normalized))) return normalized;
+
+  // Protect whole drive roots on Windows (such as C:\ or D:\)
+  // 保護 Windows 下的完整磁碟機根目錄（如 C:\ 或 D:\）
+  if (isWindows && /^[A-Za-z]:[\\/]*$/.test(normalized)) return normalized;
 
   // Protect first-level mount roots under /mnt (such as /mnt/c), while allowing items inside them.
   // 保護 /mnt 的第一層掛載根（如 /mnt/c），但允許操作掛載點內的項目（如 /mnt/c/project）。
@@ -87,12 +154,12 @@ function protectedReason(target, cwd, home, extraDirs = []) {
     !mntRelative.includes(path.sep)
   ) return normalized;
 
-  if (normalized === '.git' || normalized.endsWith(`${path.sep}.git`)) return normalized;
+  if (normalized === '.git' || normalized.endsWith(`${winPath.sep}.git`) || normalized.endsWith('/.git')) return normalized;
 
   if (/(^|[\\/])\.git([\\/]|$)/.test(normalized)) return normalized;
   // A glob that can select .git is unsafe even though it cannot be resolved beforehand.
   // 可能選中 .git 的萬用字元無法事先解析，因此一律視為不安全。
-  if (globCanMatchGit(normalized)) return normalized;
+  if (globCanMatchGit(normalized, isWindows)) return normalized;
   return null;
 }
 
@@ -193,7 +260,7 @@ function denial(reason, isCopilot, isAntigravity, isCursor, isGrok) {
       };
 }
 
-function evaluate(payload, env = process.env) {
+function evaluate(payload, env = process.env, platform = process.platform) {
   const { command, cwd, isCopilot, isAntigravity, isCursor, isGrok } = extractInput(payload);
   if (!command) {
     if (isGrok) return { decision: 'allow' };
@@ -201,12 +268,19 @@ function evaluate(payload, env = process.env) {
     if (isAntigravity) return { allow_tool: true };
     return null;
   }
-  const home = env.HOME || os.homedir();
+  const isWindows = platform === 'win32';
+  const winPath = isWindows ? (path.win32 || path) : path;
+  const delimiter = isWindows ? (path.win32 ? path.win32.delimiter : ';') : path.delimiter;
+  const homeRaw = env.USERPROFILE || env.HOME || (typeof os.homedir === 'function' ? os.homedir() : '');
+  const home = isWindows ? toWindowsDrivePath(homeRaw, isWindows) : homeRaw;
   const extraDirs = (env.BETTER_RM_PROTECTED_DIRS || '')
-    .split(path.delimiter).filter(Boolean).map((item) => path.resolve(cwd, item));
+    .split(delimiter).filter(Boolean).map((item) => {
+      const converted = isWindows ? toWindowsDrivePath(item, isWindows) : item;
+      return winPath.resolve(cwd, converted);
+    });
 
   for (const target of commandTargets(command)) {
-    const reason = protectedReason(target, cwd, home, extraDirs);
+    const reason = protectedReason(target, cwd, home, extraDirs, isWindows, env);
     if (reason) return denial(reason, isCopilot, isAntigravity, isCursor, isGrok);
   }
 
@@ -230,4 +304,13 @@ async function main() {
 
 if (require.main === module) main();
 
-module.exports = { commandTargets, evaluate, globCanMatchGit, normalizedTarget, protectedReason, shellWords };
+module.exports = {
+  commandTargets,
+  evaluate,
+  getSystemDirs,
+  globCanMatchGit,
+  normalizedTarget,
+  protectedReason,
+  shellWords,
+  toWindowsDrivePath,
+};
