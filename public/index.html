@@ -1,0 +1,3350 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<!--
+THESIS: A developer tool landing page that makes safe file operations tactile and undeniable, refusing generic SaaS templates in favor of a responsive, bilingual terminal workstation with immediate live simulation and multi-agent guardrails.
+OWN-WORLD: Terminal zinc slate ground (#090d16 / #ffffff), emerald safety accents (#10b981), crimson barrier indicators (#ef4444), cyber cyan highlights (#06b6d4), crisp monospace code layers, tactile copy triggers.
+STORY: Visitors discover how better-rm prevents accidental deletion disasters, test real rm/restore scenarios interactively in browser, get 1-line installs for shell and 9+ AI agents, and verify options across 9 languages.
+FIRST VIEWPORT: High-contrast header with 9-language switcher + theme toggle, bold value thesis, 1-click curl copy box, and an interactive live terminal simulator on the right/bottom demonstrating safe delete and root blocking.
+FORM: Modern developer product workstation, responsive bento layout, interactive CLI playground, agent matrix, options table, comparison grid, and comprehensive FAQ.
+-->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>better-rm: A Better, Safer rm Command | 給你一個更好、更安全的 rm 命令</title>
+  <meta name="description" content="A drop-in rm alternative for Linux & macOS that moves files to Trash preserving path hierarchy, timestamps, and hashes with one-command --restore and PreToolUse safety hooks for 9+ AI coding agents." />
+  <meta name="keywords" content="better-rm, rm alternative, trash, safe rm, cli, linux, macos, bash, zsh, ai coding agents, claude code, cursor, copilot, pretooluse" />
+  <meta property="og:title" content="better-rm: A Better, Safer rm Command" />
+  <meta property="og:description" content="Never lose files accidentally. Hierarchical Trash, instant --restore, root protection, and AI Agent safety hooks." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Thai', sans-serif;
+      --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #080c14;
+      --bg-surface: #0f172a;
+      --bg-surface-elevated: #1e293b;
+      --bg-surface-subtle: rgba(255, 255, 255, 0.03);
+      --bg-code: #050811;
+      
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --border-focus: #38bdf8;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --primary-subtle: rgba(16, 185, 129, 0.12);
+      
+      --accent-cyan: #06b6d4;
+      --accent-cyan-subtle: rgba(6, 182, 212, 0.12);
+      
+      --danger: #ef4444;
+      --danger-subtle: rgba(239, 68, 68, 0.12);
+      
+      --warning: #f59e0b;
+      --warning-subtle: rgba(245, 158, 11, 0.12);
+      
+      --term-bg: #030712;
+      --term-header: #111827;
+      --term-text: #e2e8f0;
+      
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    [data-theme="light"] {
+      --bg-page: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #f1f5f9;
+      --bg-surface-subtle: rgba(0, 0, 0, 0.02);
+      --bg-code: #0f172a;
+      
+      --border-subtle: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.16);
+      --border-focus: #0284c7;
+      
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-subtle: #64748b;
+      
+      --primary: #059669;
+      --primary-hover: #047857;
+      --primary-subtle: rgba(5, 150, 105, 0.1);
+      
+      --accent-cyan: #0284c7;
+      --accent-cyan-subtle: rgba(2, 132, 199, 0.1);
+      
+      --danger: #dc2626;
+      --danger-subtle: rgba(220, 38, 38, 0.1);
+      
+      --warning: #d97706;
+      --warning-subtle: rgba(217, 119, 6, 0.1);
+      
+      --term-bg: #0f172a;
+      --term-header: #1e293b;
+      --term-text: #f8fafc;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background-color var(--transition-normal), color var(--transition-normal);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+    }
+
+    code, pre {
+      font-family: var(--font-mono);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ==========================================================================
+       Navigation Bar
+       ========================================================================== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-page);
+      border-bottom: 1px solid var(--border-subtle);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all var(--transition-normal);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .brand-version {
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--primary-subtle);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+      position: relative;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Language Switcher */
+    .lang-select-wrapper {
+      position: relative;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+
+    .lang-btn:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-surface-elevated);
+    }
+
+    .lang-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 190px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 200;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .lang-dropdown.active {
+      display: flex;
+      animation: dropdownSlide 0.15s ease-out;
+    }
+
+    @keyframes dropdownSlide {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      text-align: left;
+      transition: all var(--transition-fast);
+    }
+
+    .lang-option:hover {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+    }
+
+    .lang-option.selected {
+      background: var(--primary-subtle);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all var(--transition-fast);
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-surface-elevated);
+    }
+
+    .github-link-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all var(--transition-fast);
+    }
+
+    .github-link-btn:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    /* ==========================================================================
+       Hero Section
+       ========================================================================== */
+    .hero-section {
+      padding: 72px 0 64px 0;
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--primary-subtle);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: var(--radius-full);
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 4.2vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      color: var(--text-main);
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 32px;
+      max-width: 600px;
+    }
+
+    /* Hero Install Box */
+    .install-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 28px;
+    }
+
+    .install-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .install-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .install-tab-btn {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .install-tab-btn.active {
+      background: var(--bg-surface-elevated);
+      color: var(--primary);
+    }
+
+    .install-cmd-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-code);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      border: 1px solid var(--border-subtle);
+      gap: 12px;
+    }
+
+    .install-cmd-text {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: nowrap;
+      user-select: all;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--primary-subtle);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--primary);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: all var(--transition-fast);
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--primary);
+      color: #ffffff;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.98rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: all var(--transition-fast);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.98rem;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--text-muted);
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       Live Terminal Simulator
+       ========================================================================== */
+    .terminal-card {
+      background: var(--term-bg);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .terminal-header {
+      background: var(--term-header);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--radius-full);
+    }
+
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .terminal-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .terminal-actions-bar {
+      background: var(--bg-surface-subtle);
+      padding: 10px 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .term-preset-btn {
+      padding: 5px 10px;
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+
+    .term-preset-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-subtle);
+    }
+
+    .terminal-body {
+      padding: 18px;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      color: var(--term-text);
+      min-height: 290px;
+      max-height: 380px;
+      overflow-y: auto;
+      line-height: 1.55;
+    }
+
+    .term-line {
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+
+    .term-prompt {
+      color: #10b981;
+      font-weight: bold;
+    }
+
+    .term-path {
+      color: #06b6d4;
+    }
+
+    .term-cmd {
+      color: #f8fafc;
+      font-weight: bold;
+    }
+
+    .term-success {
+      color: #34d399;
+    }
+
+    .term-error {
+      color: #f87171;
+      font-weight: 600;
+    }
+
+    .term-warning {
+      color: #fbbf24;
+    }
+
+    .term-info {
+      color: #94a3b8;
+    }
+
+    .term-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .term-input-field {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      color: #f8fafc;
+    }
+
+    /* ==========================================================================
+       Section Utilities & Headers
+       ========================================================================== */
+    .section {
+      padding: 96px 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 56px auto;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    .section-desc {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       Features Bento Grid
+       ========================================================================== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      transition: all var(--transition-normal);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .feature-card.highlight {
+      grid-column: span 2;
+      border-color: rgba(16, 185, 129, 0.3);
+      background: linear-gradient(135deg, var(--bg-surface) 0%, var(--primary-subtle) 100%);
+    }
+
+    .feature-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+
+    .feature-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+
+    .feature-card-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      flex-grow: 1;
+    }
+
+    .feature-code-pill {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      word-break: break-all;
+    }
+
+    /* ==========================================================================
+       AI Agent Guardrails Section
+       ========================================================================== */
+    .agent-hub {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .agent-chips-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .agent-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all var(--transition-fast);
+    }
+
+    .agent-chip:hover, .agent-chip.active {
+      background: var(--primary-subtle);
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .agent-chip-icon {
+      font-size: 1.1rem;
+    }
+
+    .agent-detail-box {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+    }
+
+    .agent-detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .agent-detail-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .agent-detail-config-path {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .agent-install-cmd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+    }
+
+    .agent-install-cmd code {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: #4ade80;
+    }
+
+    .agent-code-preview {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      overflow-x: auto;
+      max-height: 240px;
+    }
+
+    /* ==========================================================================
+       Protected Directories Explorer
+       ========================================================================== */
+    .protected-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .protected-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all var(--transition-fast);
+    }
+
+    .protected-item:hover {
+      border-color: var(--danger);
+      background: var(--danger-subtle);
+    }
+
+    .protected-path {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .protected-desc {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       Options & Commands Matrix
+       ========================================================================== */
+    .table-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .data-table th {
+      background: var(--bg-surface-elevated);
+      padding: 14px 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .data-table td {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: var(--bg-surface-subtle);
+      color: var(--text-main);
+    }
+
+    .data-table code {
+      background: var(--bg-surface-elevated);
+      color: var(--primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       Comparison Section
+       ========================================================================== */
+    .comparison-table-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      box-shadow: var(--shadow-md);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 18px 22px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .comparison-table th {
+      background: var(--bg-surface-elevated);
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .comparison-table th.highlight-col, .comparison-table td.highlight-col {
+      background: var(--primary-subtle);
+      border-left: 1px solid rgba(16, 185, 129, 0.2);
+      border-right: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .check-icon {
+      color: var(--primary);
+      font-weight: 800;
+      margin-right: 6px;
+    }
+
+    .cross-icon {
+      color: var(--danger);
+      font-weight: 800;
+      margin-right: 6px;
+    }
+
+    /* ==========================================================================
+       FAQ Accordion
+       ========================================================================== */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .faq-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: all var(--transition-fast);
+    }
+
+    .faq-card:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .faq-question {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .faq-answer {
+      font-size: 0.94rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    .footer {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      padding: 64px 0 32px 0;
+      margin-top: auto;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand {
+      max-width: 380px;
+    }
+
+    .footer-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    .footer-nav-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-nav-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .footer-nav-link {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+    }
+
+    .footer-nav-link:hover {
+      color: var(--primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 0.86rem;
+      color: var(--text-subtle);
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: toastIn 0.2s ease-out;
+      pointer-events: auto;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .feature-card.highlight {
+        grid-column: span 2;
+      }
+      .protected-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: flex;
+      }
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      .feature-card.highlight {
+        grid-column: span 1;
+      }
+      .protected-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-title {
+        font-size: 2.2rem;
+      }
+      .agent-hub {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="brand-logo">
+        <div class="brand-icon">🛡️</div>
+        <span>better-rm</span>
+        <span class="brand-version">v1.5.0</span>
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#features" class="nav-link" data-i18n="nav_features">特色</a></li>
+          <li><a href="#playground" class="nav-link" data-i18n="nav_demo">互動模擬</a></li>
+          <li><a href="#install" class="nav-link" data-i18n="nav_install">安裝指南</a></li>
+          <li><a href="#agents" class="nav-link" data-i18n="nav_agents">AI Agent 防護</a></li>
+          <li><a href="#options" class="nav-link" data-i18n="nav_options">參數說明</a></li>
+          <li><a href="#faq" class="nav-link" data-i18n="nav_faq">常見問題</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-controls">
+        <!-- Language Picker -->
+        <div class="lang-select-wrapper">
+          <button class="lang-btn" id="langBtn" aria-label="Select Language">
+            <span id="currentLangFlag">🇹🇼</span>
+            <span id="currentLangLabel">繁體中文</span>
+            <span>▾</span>
+          </button>
+          <div class="lang-dropdown" id="langDropdown">
+            <button class="lang-option" data-lang="zh-tw"><span>🇹🇼</span> 繁體中文 (台灣)</button>
+            <button class="lang-option" data-lang="zh-cn"><span>🇨🇳</span> 简体中文</button>
+            <button class="lang-option" data-lang="en"><span>🇺🇸</span> English</button>
+            <button class="lang-option" data-lang="ja"><span>🇯🇵</span> 日本語</button>
+            <button class="lang-option" data-lang="ko"><span>🇰🇷</span> 한국어</button>
+            <button class="lang-option" data-lang="vi"><span>🇻🇳</span> Tiếng Việt</button>
+            <button class="lang-option" data-lang="th"><span>🇹🇭</span> ไทย</button>
+            <button class="lang-option" data-lang="ms"><span>🇲🇾</span> Bahasa Melayu</button>
+            <button class="lang-option" data-lang="id"><span>🇮🇩</span> Bahasa Indonesia</button>
+          </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+
+        <!-- GitHub Link -->
+        <a href="https://github.com/doggy8088/better-rm" target="_blank" rel="noopener noreferrer" class="github-link-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge" data-i18n="hero_badge">🛡️ 安全 • 快速 • 完美相容 rm 與 AI 代理防護</div>
+        <h1 class="hero-title" data-i18n="hero_title">
+          給你一個更好、更安全的 <span class="highlight">rm 命令</span>
+        </h1>
+        <p class="hero-subtitle" data-i18n="hero_desc">
+          專為 Linux / macOS 設計的 rm 替代方案。不永久抹除檔案，而是移至保留完整目錄結構的垃圾桶，支援奈秒時間戳、雜湊防衝突、<code>rm --restore</code> 一鍵還原，並為 9+ 款 AI Coding Agent 提供 PreToolUse 攔截防護！
+        </p>
+
+        <!-- Quick 1-click Install Box -->
+        <div class="install-box">
+          <div class="install-box-header">
+            <div class="install-tabs">
+              <button class="install-tab-btn active" id="tabCurl">curl</button>
+              <button class="install-tab-btn" id="tabWget">wget</button>
+            </div>
+            <span style="font-size: 0.78rem; color: var(--text-muted);" data-i18n="quick_install_label">一行指令快速安裝</span>
+          </div>
+          <div class="install-cmd-row">
+            <span class="install-cmd-text" id="installCmdText">curl -sSL https://raw.githubusercontent.com/doggy8088/better-rm/main/install.sh | bash</span>
+            <button class="copy-btn" id="copyHeroBtn" data-i18n="copy_btn">複製</button>
+          </div>
+        </div>
+
+        <div class="hero-ctas">
+          <a href="#install" class="btn-primary" data-i18n="cta_get_started">⚡ 立即開始使用</a>
+          <a href="#playground" class="btn-secondary" data-i18n="cta_try_demo">💻 體驗線上模擬器</a>
+        </div>
+      </div>
+
+      <!-- Live Interactive Terminal Playground in Hero -->
+      <div class="terminal-card" id="playground">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <div class="terminal-dot dot-red"></div>
+            <div class="terminal-dot dot-yellow"></div>
+            <div class="terminal-dot dot-green"></div>
+          </div>
+          <div class="terminal-title">bash: better-rm demo</div>
+          <div style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">LIVE DEMO</div>
+        </div>
+        <div class="terminal-actions-bar">
+          <button class="term-preset-btn" id="btnDemoSafe" data-i18n="demo_btn_safe">🗑️ rm draft.txt</button>
+          <button class="term-preset-btn" id="btnDemoBlock" data-i18n="demo_btn_block">🛑 rm -rf /</button>
+          <button class="term-preset-btn" id="btnDemoGit" data-i18n="demo_btn_git">🚫 rm -rf .git</button>
+          <button class="term-preset-btn" id="btnDemoRestore" data-i18n="demo_btn_restore">🔄 rm --restore</button>
+          <button class="term-preset-btn" id="btnDemoLog" data-i18n="demo_btn_log">📜 cat log</button>
+        </div>
+        <div class="terminal-body" id="termOutput">
+          <div class="term-line term-info"># 歡迎體驗 better-rm 線上模擬器！點擊上方按鈕測試操作：</div>
+          <div class="term-line">
+            <span class="term-prompt">user@workstation</span>:<span class="term-path">~/project</span>$ <span class="term-cmd">ls -l</span>
+          </div>
+          <div class="term-line term-info">-rw-r--r-- 1 user staff 2048 Aug 19 14:30 app.js<br>-rw-r--r-- 1 user staff  512 Aug 19 14:30 draft.txt<br>drwxr-xr-x 8 user staff  256 Aug 19 14:28 .git</div>
+        </div>
+        <div style="padding: 10px 16px; background: var(--term-header); border-top: 1px solid var(--border-subtle); display: flex; align-items: center;">
+          <span class="term-prompt" style="margin-right: 8px;">$</span>
+          <input type="text" class="term-input-field" id="termInput" placeholder="輸入 rm 指令 (例如: rm draft.txt 或 rm -rf /)" />
+          <button class="copy-btn" id="termRunBtn" style="padding: 4px 10px; font-size: 0.78rem;" data-i18n="run_btn">執行</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Features Bento Section -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="features_tag">核心功能</span>
+        <h2 class="section-title" data-i18n="features_title">為什麼你的終端機需要 better-rm？</h2>
+        <p class="section-desc" data-i18n="features_desc">不再因為一次手滑或 AI 腳本誤判而丟失數天的心血。安全、無痛、開箱即用。</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1: Hierarchical Trash -->
+        <div class="feature-card highlight">
+          <div class="feature-icon-wrapper">📁</div>
+          <h3 class="feature-card-title" data-i18n="feat1_title">保留原始完整路徑結構</h3>
+          <p class="feature-card-desc" data-i18n="feat1_desc">
+            不同於傳統垃圾桶將所有同名檔案塞在一起，better-rm 在 <code>~/.Trash</code> 下嚴格保留原始磁碟結構，並結合奈秒時間戳與 MD5 內容雜湊，徹底杜絕檔名覆蓋衝突！
+          </p>
+          <div class="feature-code-pill">~/.Trash/home/user/project/file.txt__20260819_143052_123456789__e59ff979...</div>
+        </div>
+
+        <!-- Feature 2: System Protection -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">🛑</div>
+          <h3 class="feature-card-title" data-i18n="feat2_title">受保護目錄強制拒刪</h3>
+          <p class="feature-card-desc" data-i18n="feat2_desc">
+            全面攔截針對 <code>/</code>, <code>/bin</code>, <code>/etc</code>, <code>/home</code>, <code>$HOME</code>, <code>/mnt</code> 掛載根目錄以及任何專案內的 <code>.git</code> 目錄的毀滅性刪除。
+          </p>
+          <div class="feature-code-pill">拒絕刪除受保護的目錄: '/' (Refused!)</div>
+        </div>
+
+        <!-- Feature 3: One-command restore -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">🔄</div>
+          <h3 class="feature-card-title" data-i18n="feat3_title">一鍵快速還原</h3>
+          <p class="feature-card-desc" data-i18n="feat3_desc">
+            手滑刪除不要慌！執行 <code>rm --restore &lt;檔名&gt;</code> 自動自垃圾桶搜尋最新版本並安全還原至目前目錄，具備同名覆蓋確認機制。
+          </p>
+          <div class="feature-code-pill">rm --restore LICENSE (或 rm -f --restore)</div>
+        </div>
+
+        <!-- Feature 4: AI Agent Hooks -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">🤖</div>
+          <h3 class="feature-card-title" data-i18n="feat4_title">9+ 款 AI Agent 安全掛載</h3>
+          <p class="feature-card-desc" data-i18n="feat4_desc">
+            內建 PreToolUse 防護機制，可在 Claude Code、Cursor、GitHub Copilot CLI、Codex 等 AI 執行 Bash 工具前預先攔截危險刪除指令。
+          </p>
+          <div class="feature-code-pill">install-hooks.sh -a claude / cursor / copilot</div>
+        </div>
+
+        <!-- Feature 5: Structured Logging -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">📜</div>
+          <h3 class="feature-card-title" data-i18n="feat5_title">完整的審計刪除日誌</h3>
+          <p class="feature-card-desc" data-i18n="feat5_desc">
+            在 <code>~/.local/state/better-rm/deletion.log</code> 維護結構化日誌（遵循 XDG 規範），精確記錄每次刪除的時間、原路徑、垃圾桶路徑、雜湊與檔案類型。
+          </p>
+          <div class="feature-code-pill">TIMESTAMP | ORIG_PATH | TRASH_PATH | HASH</div>
+        </div>
+
+        <!-- Feature 6: 100% Drop-in -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">⚡</div>
+          <h3 class="feature-card-title" data-i18n="feat6_title">完全相容原生 rm 參數</h3>
+          <p class="feature-card-desc" data-i18n="feat6_desc">
+            支援 <code>-r</code>, <code>-R</code>, <code>-f</code>, <code>-i</code>, <code>-I</code>, <code>-v</code> 等所有常用旗標，無需改變你的操作習慣與 Shell 腳本。
+          </p>
+          <div class="feature-code-pill">alias rm='~/.better-rm/better-rm'</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Agent Guardrails Section -->
+  <section class="section" id="agents">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="agent_tag">AI 代理安全防護</span>
+        <h2 class="section-title" data-i18n="agent_title">給 AI Coding Agent 最堅固的安全防護欄</h2>
+        <p class="section-desc" data-i18n="agent_desc">當 AI 自動化執行指令時，PreToolUse Hook 會在指令真正進入系統前即時攔截危險操作。</p>
+      </div>
+
+      <div class="agent-hub">
+        <!-- Agent Switcher Chips -->
+        <div class="agent-chips-grid">
+          <button class="agent-chip active" data-agent="claude">
+            <span class="agent-chip-icon">🟣</span> <span>Claude Code</span>
+          </button>
+          <button class="agent-chip" data-agent="cursor">
+            <span class="agent-chip-icon">⚡</span> <span>Cursor</span>
+          </button>
+          <button class="agent-chip" data-agent="copilot">
+            <span class="agent-chip-icon">🐙</span> <span>GitHub Copilot CLI</span>
+          </button>
+          <button class="agent-chip" data-agent="codex">
+            <span class="agent-chip-icon">🧠</span> <span>Codex</span>
+          </button>
+          <button class="agent-chip" data-agent="antigravity">
+            <span class="agent-chip-icon">🚀</span> <span>Google Antigravity</span>
+          </button>
+          <button class="agent-chip" data-agent="grok">
+            <span class="agent-chip-icon">🌌</span> <span>Grok Build</span>
+          </button>
+          <button class="agent-chip" data-agent="opencode">
+            <span class="agent-chip-icon">💻</span> <span>OpenCode</span>
+          </button>
+          <button class="agent-chip" data-agent="pi">
+            <span class="agent-chip-icon">🥧</span> <span>Pi Coding Agent</span>
+          </button>
+          <button class="agent-chip" data-agent="qoder">
+            <span class="agent-chip-icon">✨</span> <span>Qoder</span>
+          </button>
+        </div>
+
+        <!-- Agent Details Card -->
+        <div class="agent-detail-box">
+          <div class="agent-detail-header">
+            <div class="agent-detail-title">
+              <span id="agentNameLabel">Claude Code</span>
+              <span class="agent-detail-config-path" id="agentConfigPath">.claude/settings.json</span>
+            </div>
+            <button class="copy-btn" id="copyAgentCmdBtn" data-i18n="copy_btn">複製指令</button>
+          </div>
+
+          <div class="agent-install-cmd">
+            <code id="agentInstallCmdText">curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a claude</code>
+          </div>
+
+          <pre class="agent-code-preview" id="agentCodePreview">{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/hooks/protect-important-paths.js\"",
+            "timeout": 5,
+            "statusMessage": "Checking protected directories..."
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation Guide Section -->
+  <section class="section" id="install">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="install_tag">安裝指南</span>
+        <h2 class="section-title" data-i18n="install_title">三種方式，輕鬆安裝啟用</h2>
+        <p class="section-desc" data-i18n="install_desc">支援 Linux、macOS 與 WSL 環境，相容 Bash 4.0+ 與 Zsh。</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+        <!-- Method 1: Automatic -->
+        <div class="feature-card" style="border-color: rgba(16, 185, 129, 0.4);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div class="feature-icon-wrapper" style="margin-bottom: 0;">⚡</div>
+            <span style="font-size: 0.75rem; font-weight: 700; background: var(--primary-subtle); color: var(--primary); padding: 4px 8px; border-radius: var(--radius-full);" data-i18n="recommended_badge">推薦首選</span>
+          </div>
+          <h3 class="feature-card-title" data-i18n="inst_method1_title">1. 一行快速安裝</h3>
+          <p class="feature-card-desc" data-i18n="inst_method1_desc">自動下載至 <code>~/.better-rm</code>，偵測 Bash / Zsh 並自動寫入別名設定。</p>
+          <pre class="agent-code-preview" style="margin-bottom: 12px; font-size: 0.78rem;">curl -sSL https://raw.githubusercontent.com/doggy8088/better-rm/main/install.sh | bash
+
+source ~/.bashrc  # 或 source ~/.zshrc
+rm --version</pre>
+          <button class="btn-primary" style="width: 100%; justify-content: center; font-size: 0.88rem;" onclick="copyCode('curl -sSL https://raw.githubusercontent.com/doggy8088/better-rm/main/install.sh | bash')" data-i18n="copy_install_btn">複製快速指令</button>
+        </div>
+
+        <!-- Method 2: Manual Alias -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">📁</div>
+          <h3 class="feature-card-title" data-i18n="inst_method2_title">2. 手動 Git 複製別名</h3>
+          <p class="feature-card-desc" data-i18n="inst_method2_desc">最安全的手動配置方式，保留系統原生 <code>/bin/rm</code> 與 <code>\rm</code>。</p>
+          <pre class="agent-code-preview" style="margin-bottom: 12px; font-size: 0.78rem;">git clone https://github.com/doggy8088/better-rm.git ~/.better-rm
+
+# 加入 ~/.bashrc 或 ~/.zshrc
+alias rm='~/.better-rm/better-rm'
+source ~/.bashrc</pre>
+          <button class="btn-secondary" style="width: 100%; justify-content: center; font-size: 0.88rem;" onclick="copyCode('git clone https://github.com/doggy8088/better-rm.git ~/.better-rm && echo \"alias rm=~/.better-rm/better-rm\" >> ~/.bashrc')" data-i18n="copy_method_btn">複製設定代碼</button>
+        </div>
+
+        <!-- Method 3: Global PATH -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">🌐</div>
+          <h3 class="feature-card-title" data-i18n="inst_method3_title">3. 複製至系統 PATH</h3>
+          <p class="feature-card-desc" data-i18n="inst_method3_desc">適合讓所有程式與工具直接透過 <code>better-rm</code> 命令呼叫。</p>
+          <pre class="agent-code-preview" style="margin-bottom: 12px; font-size: 0.78rem;">sudo cp better-rm /usr/local/bin/
+sudo chmod +x /usr/local/bin/better-rm
+
+# 可選別名:
+alias rm='better-rm'</pre>
+          <button class="btn-secondary" style="width: 100%; justify-content: center; font-size: 0.88rem;" onclick="copyCode('sudo cp better-rm /usr/local/bin/ && sudo chmod +x /usr/local/bin/better-rm')" data-i18n="copy_method_btn">複製設定代碼</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Protected Directories Section -->
+  <section class="section" id="protected">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" style="color: var(--danger);" data-i18n="prot_tag">安全防線</span>
+        <h2 class="section-title" data-i18n="prot_title">拒絕刪除的受保護目錄清單</h2>
+        <p class="section-desc" data-i18n="prot_desc">即使帶有 <code>-rf</code> 強制參數，better-rm 也會堅決阻擋對以下關鍵系統與專案路徑的刪除：</p>
+      </div>
+
+      <div class="protected-grid">
+        <div class="protected-item">
+          <div class="protected-path">🛑 / (根目錄)</div>
+          <div class="protected-desc" data-i18n="prot_root">系統根目錄，防範 rm -rf / 災難</div>
+        </div>
+        <div class="protected-item">
+          <div class="protected-path">🛑 /bin, /sbin, /usr</div>
+          <div class="protected-desc" data-i18n="prot_bin">系統二進位核心可執行程式</div>
+        </div>
+        <div class="protected-item">
+          <div class="protected-path">🛑 /etc, /boot, /dev</div>
+          <div class="protected-desc" data-i18n="prot_etc">核心系統設定、開機及裝置檔案</div>
+        </div>
+        <div class="protected-item">
+          <div class="protected-path">🛑 /home, /root, $HOME</div>
+          <div class="protected-desc" data-i18n="prot_home">使用者整個家目錄本體</div>
+        </div>
+        <div class="protected-item">
+          <div class="protected-path">🛑 /mnt, /mnt/c, /mnt/d</div>
+          <div class="protected-desc" data-i18n="prot_mnt">掛載磁碟根目錄（含 WSL 磁碟根）</div>
+        </div>
+        <div class="protected-item">
+          <div class="protected-path">🛑 .git (任何位置)</div>
+          <div class="protected-desc" data-i18n="prot_git">專案版本控制資料庫與歷史</div>
+        </div>
+        <div class="protected-item">
+          <div class="protected-path">🛑 /lib, /lib64, /opt</div>
+          <div class="protected-desc" data-i18n="prot_lib">系統共享函式庫與第三方套件</div>
+        </div>
+        <div class="protected-item">
+          <div class="protected-path">🛑 /proc, /sys, /var</div>
+          <div class="protected-desc" data-i18n="prot_proc">核心程序虛擬檔案與變動系統資料</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; padding: 16px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--text-muted);">
+        <strong style="color: var(--text-main);" data-i18n="prot_custom_title">💡 自訂更多受保護目錄：</strong>
+        <span data-i18n="prot_custom_desc">可透過環境變數加入自訂路徑：</span>
+        <code style="background: var(--bg-code); padding: 3px 6px; border-radius: 4px; color: #38bdf8;">export BETTER_RM_PROTECTED_DIRS="/srv/data:/workspace/secrets"</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Options Reference Section -->
+  <section class="section" id="options">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="opts_tag">參數與環境變數</span>
+        <h2 class="section-title" data-i18n="opts_title">CLI 參數速查與設定</h2>
+        <p class="section-desc" data-i18n="opts_desc">完整相容標準 POSIX rm 行為，額外提供安全的還原功能。</p>
+      </div>
+
+      <div class="table-container" style="margin-bottom: 40px;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th data-i18n="th_opt">選項參數</th>
+              <th data-i18n="th_desc">說明</th>
+              <th data-i18n="th_example">範例指令</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>-r, -R, --recursive</code></td>
+              <td data-i18n="opt_r_desc">遞迴刪除目錄及其內容（移至垃圾桶對應階層）</td>
+              <td><code>rm -r node_modules/</code></td>
+            </tr>
+            <tr>
+              <td><code>-f, --force</code></td>
+              <td data-i18n="opt_f_desc">強制移動，忽略不存在的檔案，不進行提示確認</td>
+              <td><code>rm -rf build/</code></td>
+            </tr>
+            <tr>
+              <td><code>-i</code></td>
+              <td data-i18n="opt_i_desc">每次刪除前均主動提示確認</td>
+              <td><code>rm -i document.docx</code></td>
+            </tr>
+            <tr>
+              <td><code>-I</code></td>
+              <td data-i18n="opt_I_desc">刪除超過 3 個檔案或遞迴刪除時提示確認一次</td>
+              <td><code>rm -I *.log</code></td>
+            </tr>
+            <tr>
+              <td><code>-v, --verbose</code></td>
+              <td data-i18n="opt_v_desc">顯示詳細操作過程（彩色打印搬移來源與目的）</td>
+              <td><code>rm -rv temp_folder/</code></td>
+            </tr>
+            <tr>
+              <td><code>--restore &lt;file&gt;</code></td>
+              <td data-i18n="opt_restore_desc"><strong>[專屬功能]</strong> 自動將最後刪除的檔案還原至目前目錄</td>
+              <td><code>rm --restore index.js</code></td>
+            </tr>
+            <tr>
+              <td><code>-f --restore &lt;file&gt;</code></td>
+              <td data-i18n="opt_restore_f_desc">還原檔案，若目前資料夾有同名檔案直接覆蓋不提示</td>
+              <td><code>rm -f --restore config.json</code></td>
+            </tr>
+            <tr>
+              <td><code>--version / --help</code></td>
+              <td data-i18n="opt_ver_desc">顯示 better-rm 版本資訊或完整說明手冊</td>
+              <td><code>rm --version</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Environment Variables Table -->
+      <h3 style="font-size: 1.3rem; margin-bottom: 16px;" data-i18n="env_table_title">🛠️ 環境變數設定</h3>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th data-i18n="th_env">環境變數</th>
+              <th data-i18n="th_default">預設值</th>
+              <th data-i18n="th_env_desc">作用與說明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>TRASH_DIR</code></td>
+              <td><code>~/.Trash</code></td>
+              <td data-i18n="env_trash_desc">自訂存放已刪除檔案的垃圾桶根目錄位置</td>
+            </tr>
+            <tr>
+              <td><code>BETTER_RM_STATE_DIR</code></td>
+              <td><code>~/.local/state/better-rm</code></td>
+              <td data-i18n="env_state_desc">自訂刪除日誌 <code>deletion.log</code> 的存放路徑（優先於 XDG_STATE_HOME）</td>
+            </tr>
+            <tr>
+              <td><code>BETTER_RM_PROTECTED_DIRS</code></td>
+              <td><em>(無)</em></td>
+              <td data-i18n="env_prot_desc">以冒號分隔額外需要防護的絕對目錄清單（如 <code>/data:/secrets</code>）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Matrix Section -->
+  <section class="section" id="comparison">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="comp_tag">功能對比</span>
+        <h2 class="section-title" data-i18n="comp_title">原生 rm vs better-rm</h2>
+        <p class="section-desc" data-i18n="comp_desc">看看升級為 better-rm 能為你的開發環境帶來哪些關鍵保護：</p>
+      </div>
+
+      <div class="comparison-table-wrapper">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th style="width: 40%;" data-i18n="comp_feature">功能特性</th>
+              <th style="width: 30%;" data-i18n="comp_native">系統原生 rm</th>
+              <th style="width: 30%;" class="highlight-col" data-i18n="comp_better">better-rm 🛡️</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-i18n="comp_row1">刪除後檔案還原能力</td>
+              <td><span class="cross-icon">✕</span> <span data-i18n="comp_r1_n">無法復原（直接抹除）</span></td>
+              <td class="highlight-col"><span class="check-icon">✓</span> <span data-i18n="comp_r1_b">rm --restore 一鍵救回</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="comp_row2">防止誤刪系統根目錄 (/)</td>
+              <td><span class="cross-icon">✕</span> <span data-i18n="comp_r2_n">--no-preserve-root 可強制刪除</span></td>
+              <td class="highlight-col"><span class="check-icon">✓</span> <span data-i18n="comp_r2_b">絕對硬性阻擋</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="comp_row3">防止誤刪專案 .git 目錄</td>
+              <td><span class="cross-icon">✕</span> <span data-i18n="comp_r3_n">無任何防護，版本庫瞬間消失</span></td>
+              <td class="highlight-col"><span class="check-icon">✓</span> <span data-i18n="comp_r3_b">自動識別並保護所有 .git</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="comp_row4">保留完整原始階層目錄</td>
+              <td><span class="cross-icon">✕</span> <span data-i18n="comp_r4_n">不適用</span></td>
+              <td class="highlight-col"><span class="check-icon">✓</span> <span data-i18n="comp_r4_b">完整目錄結構 + 奈秒防衝突</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="comp_row5">AI Coding Agent 安全掛載</td>
+              <td><span class="cross-icon">✕</span> <span data-i18n="comp_r5_n">無</span></td>
+              <td class="highlight-col"><span class="check-icon">✓</span> <span data-i18n="comp_r5_b">內建支援 9+ 款主流 AI Agent</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="comp_row6">結構化審計刪除日誌</td>
+              <td><span class="cross-icon">✕</span> <span data-i18n="comp_r6_n">無紀錄</span></td>
+              <td class="highlight-col"><span class="check-icon">✓</span> <span data-i18n="comp_r6_b">~/.local/state/better-rm/deletion.log</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="comp_row7">原生指令參數相容性</td>
+              <td><span class="check-icon">✓</span> <span data-i18n="comp_r7_n">原生支援</span></td>
+              <td class="highlight-col"><span class="check-icon">✓</span> <span data-i18n="comp_r7_b">100% 旗標支援 (-rf, -i, -v)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="faq_tag">常見問題</span>
+        <h2 class="section-title" data-i18n="faq_title">問與答</h2>
+        <p class="section-desc" data-i18n="faq_desc">關於 better-rm 的運作方式、安全性與日常維護技巧。</p>
+      </div>
+
+      <div class="faq-grid">
+        <div class="faq-card">
+          <h3 class="faq-question"><span style="color: var(--primary);">Q:</span> <span data-i18n="faq_q1">better-rm 會覆蓋系統的 /bin/rm 嗎？</span></h3>
+          <p class="faq-answer" data-i18n="faq_a1">
+            不會。預設推薦的安裝方式僅透過 Shell 的 <code>alias rm=...</code> 進行別名替代。系統自帶的 <code>/bin/rm</code> 完全不受影響，當你必須使用原生指令時，隨時可透過 <code>/bin/rm</code> 或 <code>\rm</code> 執行。
+          </p>
+        </div>
+
+        <div class="faq-card">
+          <h3 class="faq-question"><span style="color: var(--primary);">Q:</span> <span data-i18n="faq_q2">如何清理或清空垃圾桶？</span></h3>
+          <p class="faq-answer" data-i18n="faq_a2">
+            better-rm 預設不自動刪除垃圾桶內容，以確保最大的安全性。你可以透過 <code>ls -la ~/.Trash</code> 檢視，並在確認無誤後使用原生指令 <code>/bin/rm -rf ~/.Trash/*</code> 清空磁碟空間。
+          </p>
+        </div>
+
+        <div class="faq-card">
+          <h3 class="faq-question"><span style="color: var(--primary);">Q:</span> <span data-i18n="faq_q3">檔案名稱衝突時怎麼處理？</span></h3>
+          <p class="faq-answer" data-i18n="faq_a3">
+            移入垃圾桶時，better-rm 會自動將檔名附加上奈秒級時間戳記與 MD5 內容雜湊（例如 <code>file.txt__20260819_143052_123456789__hash</code>），保證即使在一毫秒內刪除多個同名檔案也不會互相覆蓋。
+          </p>
+        </div>
+
+        <div class="faq-card">
+          <h3 class="faq-question"><span style="color: var(--primary);">Q:</span> <span data-i18n="faq_q4">AI Agent Hook 是如何保護終端機的？</span></h3>
+          <p class="faq-answer" data-i18n="faq_a4">
+            透過 <code>install-hooks.sh -a &lt;agent&gt;</code> 安裝的 PreToolUse Hook，會在 Agent 執行任何 <code>Bash</code> 工具前進行路徑評估。一旦發現針對 <code>/</code>, <code>$HOME</code>, <code>.git</code> 的刪除意圖，會立即返回拒絕決策，直接阻止惡意指令發送。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand-logo" style="margin-bottom: 8px;">
+            <div class="brand-icon">🛡️</div>
+            <span>better-rm</span>
+          </div>
+          <p class="footer-desc" data-i18n="footer_brand_desc">
+            給你一個更好、更安全的 rm 命令。守護每位開發者與 AI 代理的檔案安全，防止災難性誤刪。
+          </p>
+        </div>
+
+        <div class="footer-nav-col">
+          <div class="footer-nav-title" data-i18n="footer_links">相關連結</div>
+          <a href="https://github.com/doggy8088/better-rm" target="_blank" rel="noopener noreferrer" class="footer-nav-link">GitHub Repository</a>
+          <a href="https://github.com/doggy8088/better-rm/releases" target="_blank" rel="noopener noreferrer" class="footer-nav-link">Releases & Changelog</a>
+          <a href="https://github.com/doggy8088/better-rm/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="footer-nav-link">MIT License</a>
+        </div>
+
+        <div class="footer-nav-col">
+          <div class="footer-nav-title" data-i18n="footer_credits">維護與社群</div>
+          <a href="https://github.com/doggy8088" target="_blank" rel="noopener noreferrer" class="footer-nav-link">Created by @doggy8088</a>
+          <a href="https://github.com/doggy8088/better-rm/issues" target="_blank" rel="noopener noreferrer" class="footer-nav-link">Report an Issue</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 better-rm. Released under the MIT License.</div>
+        <div>Made with craft for developers & AI Agents worldwide.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Internationalization & Dynamic Engine Scripts -->
+  <script>
+    /* ==========================================================================
+       Comprehensive Multi-lingual Dictionary (9 Languages)
+       ========================================================================== */
+    const I18N = {
+      'zh-tw': {
+        flag: '🇹🇼',
+        label: '繁體中文',
+        nav_features: '特色',
+        nav_demo: '互動模擬',
+        nav_install: '安裝指南',
+        nav_agents: 'AI Agent 防護',
+        nav_options: '參數說明',
+        nav_faq: '常見問題',
+        hero_badge: '🛡️ 安全 • 快速 • 完美相容 rm 與 AI 代理防護',
+        hero_title: '給你一個更好、更安全的 <span class="highlight">rm 命令</span>',
+        hero_desc: '專為 Linux / macOS 設計的 rm 替代方案。不永久抹除檔案，而是移至保留完整目錄結構的垃圾桶，支援奈秒時間戳、雜湊防衝突、<code>rm --restore</code> 一鍵還原，並為 9+ 款 AI Coding Agent 提供 PreToolUse 攔截防護！',
+        quick_install_label: '一行指令快速安裝',
+        copy_btn: '複製',
+        cta_get_started: '⚡ 立即開始使用',
+        cta_try_demo: '💻 體驗線上模擬器',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: '執行',
+        features_tag: '核心功能',
+        features_title: '為什麼你的終端機需要 better-rm？',
+        features_desc: '不再因為一次手滑或 AI 腳本誤判而丟失數天的心血。安全、無痛、開箱即用。',
+        feat1_title: '保留原始完整路徑結構',
+        feat1_desc: '不同於傳統垃圾桶將所有同名檔案塞在一起，better-rm 在 ~/.Trash 下嚴格保留原始磁碟結構，並結合奈秒時間戳與 MD5 內容雜湊，徹底杜絕檔名覆蓋衝突！',
+        feat2_title: '受保護目錄強制拒刪',
+        feat2_desc: '全面攔截針對 /, /bin, /etc, /home, $HOME, /mnt 掛載根目錄以及任何專案內的 .git 目錄的毀滅性刪除。',
+        feat3_title: '一鍵快速還原',
+        feat3_desc: '手滑刪除不要慌！執行 rm --restore <檔名> 自動自垃圾桶搜尋最新版本並安全還原至目前目錄，具備同名覆蓋確認機制。',
+        feat4_title: '9+ 款 AI Agent 安全掛載',
+        feat4_desc: '內建 PreToolUse 防護機制，可在 Claude Code、Cursor、GitHub Copilot CLI、Codex 等 AI 執行 Bash 工具前預先攔截危險刪除指令。',
+        feat5_title: '完整的審計刪除日誌',
+        feat5_desc: '在 ~/.local/state/better-rm/deletion.log 維護結構化日誌（遵循 XDG 規範），精確記錄每次刪除的時間、原路徑、垃圾桶路徑、雜湊與檔案類型。',
+        feat6_title: '完全相容原生 rm 參數',
+        feat6_desc: '支援 -r, -R, -f, -i, -I, -v 等所有常用旗標，無需改變你的操作習慣與 Shell 腳本。',
+        agent_tag: 'AI 代理安全防護',
+        agent_title: '給 AI Coding Agent 最堅固的安全防護欄',
+        agent_desc: '當 AI 自動化執行指令時，PreToolUse Hook 會在指令真正進入系統前即時攔截危險操作。',
+        install_tag: '安裝指南',
+        install_title: '三種方式，輕鬆安裝啟用',
+        install_desc: '支援 Linux、macOS 與 WSL 環境，相容 Bash 4.0+ 與 Zsh。',
+        recommended_badge: '推薦首選',
+        inst_method1_title: '1. 一行快速安裝',
+        inst_method1_desc: '自動下載至 ~/.better-rm，偵測 Bash / Zsh 並自動寫入別名設定。',
+        copy_install_btn: '複製快速指令',
+        inst_method2_title: '2. 手動 Git 複製別名',
+        inst_method2_desc: '最安全的手動配置方式，保留系統原生 /bin/rm 與 \\rm。',
+        copy_method_btn: '複製設定代碼',
+        inst_method3_title: '3. 複製至系統 PATH',
+        inst_method3_desc: '適合讓所有程式與工具直接透過 better-rm 命令呼叫。',
+        prot_tag: '安全防線',
+        prot_title: '拒絕刪除的受保護目錄清單',
+        prot_desc: '即使帶有 -rf 強制參數，better-rm 也會堅決阻擋對以下關鍵系統與專案路徑的刪除：',
+        prot_root: '系統根目錄，防範 rm -rf / 災難',
+        prot_bin: '系統二進位核心可執行程式',
+        prot_etc: '核心系統設定、開機及裝置檔案',
+        prot_home: '使用者整個家目錄本體',
+        prot_mnt: '掛載磁碟根目錄（含 WSL 磁碟根）',
+        prot_git: '專案版本控制資料庫與歷史',
+        prot_lib: '系統共享函式庫與第三方套件',
+        prot_proc: '核心程序虛擬檔案與變動系統資料',
+        prot_custom_title: '💡 自訂更多受保護目錄：',
+        prot_custom_desc: '可透過環境變數加入自訂路徑：',
+        opts_tag: '參數與環境變數',
+        opts_title: 'CLI 參數速查與設定',
+        opts_desc: '完整相容標準 POSIX rm 行為，額外提供安全的還原功能。',
+        th_opt: '選項參數',
+        th_desc: '說明',
+        th_example: '範例指令',
+        opt_r_desc: '遞迴刪除目錄及其內容（移至垃圾桶對應階層）',
+        opt_f_desc: '強制移動，忽略不存在的檔案，不進行提示確認',
+        opt_i_desc: '每次刪除前均主動提示確認',
+        opt_I_desc: '刪除超過 3 個檔案或遞迴刪除時提示確認一次',
+        opt_v_desc: '顯示詳細操作過程（彩色打印搬移來源與目的）',
+        opt_restore_desc: '<strong>[專屬功能]</strong> 自動將最後刪除的檔案還原至目前目錄',
+        opt_restore_f_desc: '還原檔案，若目前資料夾有同名檔案直接覆蓋不提示',
+        opt_ver_desc: '顯示 better-rm 版本資訊或完整說明手冊',
+        env_table_title: '🛠️ 環境變數設定',
+        th_env: '環境變數',
+        th_default: '預設值',
+        th_env_desc: '作用與說明',
+        env_trash_desc: '自訂存放已刪除檔案的垃圾桶根目錄位置',
+        env_state_desc: '自訂刪除日誌 deletion.log 的存放路徑（優先於 XDG_STATE_HOME）',
+        env_prot_desc: '以冒號分隔額外需要防護的絕對目錄清單（如 /data:/secrets）',
+        comp_tag: '功能對比',
+        comp_title: '原生 rm vs better-rm',
+        comp_desc: '看看升級為 better-rm 能為你的開發環境帶來哪些關鍵保護：',
+        comp_feature: '功能特性',
+        comp_native: '系統原生 rm',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: '刪除後檔案還原能力',
+        comp_r1_n: '無法復原（直接抹除）',
+        comp_r1_b: 'rm --restore 一鍵救回',
+        comp_row2: '防止誤刪系統根目錄 (/)',
+        comp_r2_n: '--no-preserve-root 可強制刪除',
+        comp_r2_b: '絕對硬性阻擋',
+        comp_row3: '防止誤刪專案 .git 目錄',
+        comp_r3_n: '無任何防護，版本庫瞬間消失',
+        comp_r3_b: '自動識別並保護所有 .git',
+        comp_row4: '保留完整原始階層目錄',
+        comp_r4_n: '不適用',
+        comp_r4_b: '完整目錄結構 + 奈秒防衝突',
+        comp_row5: 'AI Coding Agent 安全掛載',
+        comp_r5_n: '無',
+        comp_r5_b: '內建支援 9+ 款主流 AI Agent',
+        comp_row6: '結構化審計刪除日誌',
+        comp_r6_n: '無紀錄',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: '原生指令參數相容性',
+        comp_r7_n: '原生支援',
+        comp_r7_b: '100% 旗標支援 (-rf, -i, -v)',
+        faq_tag: '常見問題',
+        faq_title: '問與答',
+        faq_desc: '關於 better-rm 的運作方式、安全性與日常維護技巧。',
+        faq_q1: 'better-rm 會覆蓋系統的 /bin/rm 嗎？',
+        faq_a1: '不會。預設推薦的安裝方式僅透過 Shell 的 alias rm=... 進行別名替代。系統自帶的 /bin/rm 完全不受影響，當你必須使用原生指令時，隨時可透過 /bin/rm 或 \\rm 執行。',
+        faq_q2: '如何清理或清空垃圾桶？',
+        faq_a2: 'better-rm 預設不自動刪除垃圾桶內容，以確保最大的安全性。你可以透過 ls -la ~/.Trash 檢視，並在確認無誤後使用原生指令 /bin/rm -rf ~/.Trash/* 清空磁碟空間。',
+        faq_q3: '檔案名稱衝突時怎麼處理？',
+        faq_a3: '移入垃圾桶時，better-rm 會自動將檔名附加上奈秒級時間戳記與 MD5 內容雜湊（例如 file.txt__20260819_143052_123456789__hash），保證即使在一毫秒內刪除多個同名檔案也不會互相覆蓋。',
+        faq_q4: 'AI Agent Hook 是如何保護終端機的？',
+        faq_a4: '透過 install-hooks.sh -a <agent> 安裝的 PreToolUse Hook，會在 Agent 執行任何 Bash 工具前進行路徑評估。一旦發現針對 /, $HOME, .git 的刪除意圖，會立即返回拒絕決策，直接阻止惡意指令發送。',
+        footer_brand_desc: '給你一個更好、更安全的 rm 命令。守護每位開發者與 AI 代理的檔案安全，防止災難性誤刪。',
+        footer_links: '相關連結',
+        footer_credits: '維護與社群',
+        toast_copied: '已複製到剪貼簿！'
+      },
+
+      'zh-cn': {
+        flag: '🇨🇳',
+        label: '简体中文',
+        nav_features: '特性',
+        nav_demo: '交互模拟',
+        nav_install: '安装指南',
+        nav_agents: 'AI Agent 防护',
+        nav_options: '参数说明',
+        nav_faq: '常见问题',
+        hero_badge: '🛡️ 安全 • 极速 • 完美兼容 rm 与 AI 代理防护',
+        hero_title: '给你一个更好、更安全的 <span class="highlight">rm 命令</span>',
+        hero_desc: '专为 Linux / macOS 设计的 rm 替代方案。不永久抹除文件，而是移动至保留完整目录结构的回收站，支持纳秒时间戳、哈希防冲突、<code>rm --restore</code> 一键还原，并为 9+ 款 AI Coding Agent 提供 PreToolUse 拦截防护！',
+        quick_install_label: '一行指令快速安装',
+        copy_btn: '复制',
+        cta_get_started: '⚡ 立即开始使用',
+        cta_try_demo: '💻 体验在线模拟器',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: '执行',
+        features_tag: '核心功能',
+        features_title: '为什么你的终端需要 better-rm？',
+        features_desc: '不再因为一次误操作或 AI 脚本误判而丢失心血。安全、无痛、开箱即用。',
+        feat1_title: '保留原始完整路径结构',
+        feat1_desc: '不同于传统回收站将同名文件混在一起，better-rm 在 ~/.Trash 下严格保留原始磁盘结构，并结合纳秒时间戳与 MD5 哈希，彻底消除文件名覆盖冲突！',
+        feat2_title: '受保护目录强制拒删',
+        feat2_desc: '全面拦截针对 /, /bin, /etc, /home, $HOME, /mnt 挂载根目录以及任何项目内的 .git 目录的毁灭性删除。',
+        feat3_title: '一键快速还原',
+        feat3_desc: '误删文件不要慌！执行 rm --restore <文件名> 自动从回收站搜索最新版本并安全还原至当前目录，支持同名覆盖确认。',
+        feat4_title: '9+ 款 AI Agent 安全挂载',
+        feat4_desc: '内置 PreToolUse 防护机制，可在 Claude Code、Cursor、GitHub Copilot CLI、Codex 等 AI 执行 Bash 工具前预先拦截危险删除指令。',
+        feat5_title: '完整的审计删除日志',
+        feat5_desc: '在 ~/.local/state/better-rm/deletion.log 维护结构化日志（遵循 XDG 规范），精确记录每次删除的时间、原路径、回收站路径、哈希与文件类型。',
+        feat6_title: '完全兼容原生 rm 参数',
+        feat6_desc: '支持 -r, -R, -f, -i, -I, -v 等所有常用选项，无需改变你的操作习惯与脚本。',
+        agent_tag: 'AI 代理安全防护',
+        agent_title: '给 AI Coding Agent 最坚固的安全护栏',
+        agent_desc: '当 AI 自动化执行指令时，PreToolUse Hook 会在指令进入系统前即时拦截危险操作。',
+        install_tag: '安装指南',
+        install_title: '三种方式，轻松安装启用',
+        install_desc: '支持 Linux、macOS 与 WSL 环境，兼容 Bash 4.0+ 与 Zsh。',
+        recommended_badge: '推荐首选',
+        inst_method1_title: '1. 一行快速安装',
+        inst_method1_desc: '自动下载至 ~/.better-rm，检测 Bash / Zsh 并自动配置别名。',
+        copy_install_btn: '复制快速指令',
+        inst_method2_title: '2. 手动 Git 克隆别名',
+        inst_method2_desc: '最安全的手动配置方式，保留系统原生 /bin/rm 与 \\rm。',
+        copy_method_btn: '复制配置代码',
+        inst_method3_title: '3. 复制至系统 PATH',
+        inst_method3_desc: '适合让所有程序与工具直接通过 better-rm 命令调用。',
+        prot_tag: '安全防线',
+        prot_title: '拒绝删除的受保护目录清单',
+        prot_desc: '即使带有 -rf 强制参数，better-rm 也会坚决阻挡对以下关键系统与项目路径的删除：',
+        prot_root: '系统根目录，防范 rm -rf / 灾难',
+        prot_bin: '系统二进制核心可执行程序',
+        prot_etc: '核心系统配置、启动及设备文件',
+        prot_home: '用户整个家目录本体',
+        prot_mnt: '挂载磁盘根目录（含 WSL 磁盘根）',
+        prot_git: '项目版本控制数据库与历史',
+        prot_lib: '系统共享库与第三方软件包',
+        prot_proc: '核心进程虚拟文件与变动系统数据',
+        prot_custom_title: '💡 自定义更多受保护目录：',
+        prot_custom_desc: '可通过环境变量加入自定义路径：',
+        opts_tag: '参数与环境变量',
+        opts_title: 'CLI 参数速查与设置',
+        opts_desc: '完整兼容标准 POSIX rm 行为，额外提供安全的还原功能。',
+        th_opt: '选项参数',
+        th_desc: '说明',
+        th_example: '示例指令',
+        opt_r_desc: '递归删除目录及其内容（移至回收站对应层级）',
+        opt_f_desc: '强制移动，忽略不存在的文件，不进行确认提示',
+        opt_i_desc: '每次删除前均主动提示确认',
+        opt_I_desc: '删除超过 3 个文件或递归删除时提示确认一次',
+        opt_v_desc: '显示详细操作过程（彩色打印移动源与目标）',
+        opt_restore_desc: '<strong>[专属功能]</strong> 自动将最后删除的文件还原至当前目录',
+        opt_restore_f_desc: '还原文件，若当前文件夹有同名文件直接覆盖不提示',
+        opt_ver_desc: '显示 better-rm 版本信息或完整说明手册',
+        env_table_title: '🛠️ 环境变量设置',
+        th_env: '环境变量',
+        th_default: '默认值',
+        th_env_desc: '作用与说明',
+        env_trash_desc: '自定义存放已删除文件的回收站根目录位置',
+        env_state_desc: '自定义删除日志 deletion.log 的存放路径（优先于 XDG_STATE_HOME）',
+        env_prot_desc: '以冒号分隔额外需要防护的绝对目录清单（如 /data:/secrets）',
+        comp_tag: '功能对比',
+        comp_title: '原生 rm vs better-rm',
+        comp_desc: '看看升级为 better-rm 能为你的开发环境带来哪些关键保护：',
+        comp_feature: '功能特性',
+        comp_native: '系统原生 rm',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: '删除后文件还原能力',
+        comp_r1_n: '无法复原（直接擦除）',
+        comp_r1_b: 'rm --restore 一键救回',
+        comp_row2: '防止误删系统根目录 (/)',
+        comp_r2_n: '--no-preserve-root 可强制删除',
+        comp_r2_b: '绝对硬性阻挡',
+        comp_row3: '防止误删项目 .git 目录',
+        comp_r3_n: '无任何防护，代码库瞬间消失',
+        comp_r3_b: '自动识别并保护所有 .git',
+        comp_row4: '保留完整原始层级目录',
+        comp_r4_n: '不适用',
+        comp_r4_b: '完整目录结构 + 纳秒防冲突',
+        comp_row5: 'AI Coding Agent 安全挂载',
+        comp_r5_n: '无',
+        comp_r5_b: '内置支持 9+ 款主流 AI Agent',
+        comp_row6: '结构化审计删除日志',
+        comp_r6_n: '无记录',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: '原生指令参数兼容性',
+        comp_r7_n: '原生支持',
+        comp_r7_b: '100% 选项支持 (-rf, -i, -v)',
+        faq_tag: '常见问题',
+        faq_title: '问与答',
+        faq_desc: '关于 better-rm 的运行方式、安全性与日常维护技巧。',
+        faq_q1: 'better-rm 会覆盖系统的 /bin/rm 吗？',
+        faq_a1: '不会。推荐的安装方式仅通过 Shell 的 alias rm=... 进行别名替换。系统自带的 /bin/rm 完全不受影响，需要时随时可通过 /bin/rm 或 \\rm 执行。',
+        faq_q2: '如何清理或清空回收站？',
+        faq_a2: 'better-rm 默认不自动删除回收站内容以保安全。你可以通过 ls -la ~/.Trash 查看，并在确认无误后使用原生 /bin/rm -rf ~/.Trash/* 清空。',
+        faq_q3: '文件名冲突时怎么处理？',
+        faq_a3: '移入回收站时，better-rm 会自动附加上纳秒时间戳与 MD5 哈希（例如 file.txt__20260819_143052_123456789__hash），确保毫秒级内删除同名文件也不会覆盖。',
+        faq_q4: 'AI Agent Hook 是如何保护终端的？',
+        faq_a4: '通过 install-hooks.sh -a <agent> 安装的 PreToolUse Hook，会在 Agent 执行任何 Bash 工具前进行路径评估。一旦发现针对 /, $HOME, .git 的删除意图，会直接拦截拒绝。',
+        footer_brand_desc: '给你一个更好、更安全的 rm 命令。守护每位开发者与 AI 代理的文件安全。',
+        footer_links: '相关链接',
+        footer_credits: '维护与社区',
+        toast_copied: '已复制到剪贴板！'
+      },
+
+      'en': {
+        flag: '🇺🇸',
+        label: 'English',
+        nav_features: 'Features',
+        nav_demo: 'Interactive Demo',
+        nav_install: 'Install Guide',
+        nav_agents: 'AI Agent Hooks',
+        nav_options: 'Options',
+        nav_faq: 'FAQ',
+        hero_badge: '🛡️ Safe • Fast • Drop-in CLI & AI Agent Guardrails',
+        hero_title: 'A Better, Safer <span class="highlight">rm Command</span>',
+        hero_desc: 'A drop-in replacement for rm on Linux & macOS. Moves deleted files to a hierarchical Trash preserving paths, nanosecond timestamps, and MD5 hashes with one-command <code>rm --restore</code> and PreToolUse safety hooks for 9+ AI Coding Agents.',
+        quick_install_label: 'One-line Fast Install',
+        copy_btn: 'Copy',
+        cta_get_started: '⚡ Get Started',
+        cta_try_demo: '💻 Try Live Simulator',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: 'Run',
+        features_tag: 'Core Pillars',
+        features_title: 'Why your terminal needs better-rm',
+        features_desc: 'Never lose critical code or system files from a terminal slip or hallucinating AI script. Safe, zero-config, and drop-in compatible.',
+        feat1_title: 'Preserve Full Directory Hierarchy',
+        feat1_desc: 'Unlike flat trash folders, better-rm retains original path hierarchies under ~/.Trash with nanosecond timestamps and MD5 hashes to prevent name collisions.',
+        feat2_title: 'Protected System & Git Roots',
+        feat2_desc: 'Hard blocks destructive deletions of /, /bin, /etc, /home, $HOME, /mnt mount points, and any .git repository directories.',
+        feat3_title: 'One-Command Instant Restore',
+        feat3_desc: 'Accidentally deleted a file? Run rm --restore <filename> to immediately restore the latest copy to the current directory with collision alerts.',
+        feat4_title: 'PreToolUse Hooks for 9+ AI Agents',
+        feat4_desc: 'Native safety interceptors for Claude Code, Cursor, GitHub Copilot CLI, Codex, Grok, Antigravity, OpenCode, Pi, and Qoder.',
+        feat5_title: 'Structured Audit Deletion Log',
+        feat5_desc: 'Maintains an XDG-compliant structured log at ~/.local/state/better-rm/deletion.log recording timestamps, original paths, trash paths, hashes, and file types.',
+        feat6_title: '100% POSIX rm Compatible',
+        feat6_desc: 'Supports -r, -R, -f, -i, -I, -v without breaking your terminal habits, workflows, or shell scripts.',
+        agent_tag: 'AI Agent Safety',
+        agent_title: 'Guardrails for Autonomous AI Coding Agents',
+        agent_desc: 'Intercepts Bash / command tools before execution to prevent catastrophic accidental deletions.',
+        install_tag: 'Installation',
+        install_title: 'Three simple ways to install',
+        install_desc: 'Compatible with Linux, macOS, WSL, Bash 4.0+, and Zsh.',
+        recommended_badge: 'Recommended',
+        inst_method1_title: '1. One-Line Fast Install',
+        inst_method1_desc: 'Installs to ~/.better-rm and automatically configures Bash / Zsh aliases.',
+        copy_install_btn: 'Copy Install Command',
+        inst_method2_title: '2. Manual Git Clone & Alias',
+        inst_method2_desc: 'Safe manual setup while keeping /bin/rm and \\rm accessible.',
+        copy_method_btn: 'Copy Setup Code',
+        inst_method3_title: '3. Copy to System PATH',
+        inst_method3_desc: 'Ideal for system-wide availability and scripts calling better-rm directly.',
+        copy_method_btn: 'Copy Setup Code',
+        prot_tag: 'Safety Guardrails',
+        prot_title: 'Protected System & Project Directories',
+        prot_desc: 'Even with -rf force flags, better-rm strictly refuses deletion of these critical paths:',
+        prot_root: 'Root directory, preventing rm -rf / disasters',
+        prot_bin: 'Core binary system executables',
+        prot_etc: 'Core configurations, boot, and device files',
+        prot_home: 'Entire user home directory roots',
+        prot_mnt: 'Mount roots (including WSL /mnt/c, /mnt/d)',
+        prot_git: 'Git version control databases and histories',
+        prot_lib: 'System libraries and third-party packages',
+        prot_proc: 'Process virtual files and variable system data',
+        prot_custom_title: '💡 Custom Protected Directories:',
+        prot_custom_desc: 'Add custom paths via environment variable:',
+        opts_tag: 'Options & Variables',
+        opts_title: 'CLI Reference & Configuration',
+        opts_desc: 'Drop-in compatible with standard rm, plus built-in recovery commands.',
+        th_opt: 'Option',
+        th_desc: 'Description',
+        th_example: 'Example',
+        opt_r_desc: 'Recursively remove directories and their contents to Trash hierarchy',
+        opt_f_desc: 'Force move, ignore nonexistent files, never prompt',
+        opt_i_desc: 'Prompt before every removal',
+        opt_I_desc: 'Prompt once before removing more than three files or recursively',
+        opt_v_desc: 'Explain what is being done (verbose colored output)',
+        opt_restore_desc: '<strong>[Exclusive]</strong> Automatically restores the latest deleted file to current directory',
+        opt_restore_f_desc: 'Restore file, overwrite destination without prompt if exists',
+        opt_ver_desc: 'Display version information or full help manual',
+        env_table_title: '🛠️ Environment Variables',
+        th_env: 'Variable',
+        th_default: 'Default',
+        th_env_desc: 'Purpose & Description',
+        env_trash_desc: 'Custom path for the Trash root directory',
+        env_state_desc: 'Custom path for deletion.log (overrides XDG_STATE_HOME)',
+        env_prot_desc: 'Colon-separated list of additional protected absolute paths',
+        comp_tag: 'Comparison',
+        comp_title: 'Native rm vs better-rm',
+        comp_desc: 'See why upgrading to better-rm protects your development workflow:',
+        comp_feature: 'Feature',
+        comp_native: 'Native /bin/rm',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: 'File recovery after deletion',
+        comp_r1_n: 'Impossible (permanently wiped)',
+        comp_r1_b: 'rm --restore instant recovery',
+        comp_row2: 'Root directory (/) protection',
+        comp_r2_n: '--no-preserve-root can wipe system',
+        comp_r2_b: 'Strict refusal',
+        comp_row3: '.git directory protection',
+        comp_r3_n: 'No protection, repository lost instantly',
+        comp_r3_b: 'Automatic detection & block',
+        comp_row4: 'Preserve path hierarchy in Trash',
+        comp_r4_n: 'N/A',
+        comp_r4_b: 'Full structure + nanosecond tags',
+        comp_row5: 'AI Coding Agent Guardrails',
+        comp_r5_n: 'None',
+        comp_r5_b: 'Built-in PreToolUse hooks for 9+ Agents',
+        comp_row6: 'Structured Audit Log',
+        comp_r6_n: 'No logging',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: 'POSIX CLI Flag Compatibility',
+        comp_r7_n: 'Native',
+        comp_r7_b: '100% compatible (-rf, -i, -v)',
+        faq_tag: 'FAQ',
+        faq_title: 'Frequently Asked Questions',
+        faq_desc: 'Everything you need to know about better-rm safety and operations.',
+        faq_q1: 'Does better-rm overwrite the system /bin/rm binary?',
+        faq_a1: 'No. The recommended installation uses shell aliases (alias rm=...). The native /bin/rm binary is untouched and accessible anytime via /bin/rm or \\rm.',
+        faq_q2: 'How do I clean or empty the Trash?',
+        faq_a2: 'better-rm never automatically deletes files in Trash for safety. Inspect it with ls -la ~/.Trash and empty safely when needed using /bin/rm -rf ~/.Trash/*.',
+        faq_q3: 'How are name collisions handled?',
+        faq_a3: 'better-rm appends nanosecond timestamps and MD5 hashes (e.g. file.txt__20260819_143052_123456789__hash) to guarantee zero file overwrite collisions in Trash.',
+        faq_q4: 'How does the AI Agent hook work?',
+        faq_a4: 'The PreToolUse hook intercepts tool executions before Bash runs. If a dangerous command targeting /, $HOME, or .git is detected, the hook denies execution immediately.',
+        footer_brand_desc: 'A better, safer rm command. Protecting developers and AI coding agents from accidental file destruction.',
+        footer_links: 'Links',
+        footer_credits: 'Maintainer & Community',
+        toast_copied: 'Copied to clipboard!'
+      },
+
+      'ja': {
+        flag: '🇯🇵',
+        label: '日本語',
+        nav_features: '特徴',
+        nav_demo: 'デモ',
+        nav_install: 'インストール',
+        nav_agents: 'AI Agent 保護',
+        nav_options: 'オプション',
+        nav_faq: 'FAQ',
+        hero_badge: '🛡️ 安全 • 高速 • rm 完全互換 & AI エージェント保護',
+        hero_title: 'より安全で快適な <span class="highlight">rm コマンド</span>',
+        hero_desc: 'Linux / macOS 用の安全な rm 代替ツール。ファイルを完全削除せず、階層構造・ナノ秒タイムスタンプ・ハッシュを保持してゴミ箱へ移動。<code>rm --restore</code> で瞬時に復元でき、9 種類以上の AI コーディングエージェントに事前保護フックを提供します。',
+        quick_install_label: '1 行コマンドで簡単インストール',
+        copy_btn: 'コピー',
+        cta_get_started: '⚡ 今すぐ始める',
+        cta_try_demo: '💻 オンラインデモを試す',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: '実行',
+        features_tag: '主な機能',
+        features_title: 'なぜ better-rm が必要なのか？',
+        features_desc: 'コマンドの打ち間違いや AI スクリプトの暴走によるファイル消失を未然に防止します。',
+        feat1_title: '元のディレクトリ階層を完全保持',
+        feat1_desc: '~/.Trash 配下に元のパス構造を忠実に再現し、ナノ秒タイムスタンプと MD5 ハッシュで同名ファイルの上書き衝突を徹底排除します。',
+        feat2_title: '重要システム＆Git ディレクトリの保護',
+        feat2_desc: '/、/bin、/etc、/home、$HOME、/mnt マウントルート、およびプロジェクト内のすべての .git の誤削除を断固拒否します。',
+        feat3_title: '1 コマンドで即座に復元',
+        feat3_desc: '間違えて削除しても大丈夫。rm --restore <ファイル名> で最新の削除ファイルをカレントディレクトリへ安全に復元します。',
+        feat4_title: '9 種類以上の AI Agent に対応',
+        feat4_desc: 'Claude Code、Cursor、GitHub Copilot CLI、Codex 等の AI が危険なコマンドを実行する前に PreToolUse フックで遮断します。',
+        feat5_title: '詳細な削除監査ログ',
+        feat5_desc: '~/.local/state/better-rm/deletion.log にタイムスタンプ、元のパス、ゴミ箱パス、ハッシュを記録します。',
+        feat6_title: 'POSIX rm オプションに完全対応',
+        feat6_desc: '-r, -R, -f, -i, -I, -v をサポートしており、これまでの操作習慣やスクリプトをそのまま利用できます。',
+        agent_tag: 'AI エージェント保護',
+        agent_title: 'AI コーディングエージェントのための安全ガードレール',
+        agent_desc: 'AI が自動実行する前に危険なファイル削除操作をリアルタイムに検知・拒否します。',
+        install_tag: 'インストール',
+        install_title: '選べる 3 つのインストール方法',
+        install_desc: 'Linux、macOS、WSL、Bash 4.0+、Zsh に対応。',
+        recommended_badge: '推奨',
+        inst_method1_title: '1. ワンライナー高速インストール',
+        inst_method1_desc: '~/.better-rm に自動ダウンロードし、Bash / Zsh のエイリアスを自動設定します。',
+        copy_install_btn: 'コマンドをコピー',
+        inst_method2_title: '2. 手動 Git クローン & エイリアス',
+        inst_method2_desc: '最も安全な手動設定。元の /bin/rm や \\rm も併用可能です。',
+        copy_method_btn: '設定コードをコピー',
+        inst_method3_title: '3. システム PATH への配置',
+        inst_method3_desc: 'システム全体で better-rm を直接実行したい場合に適しています。',
+        copy_method_btn: '設定コードをコピー',
+        prot_tag: '安全機能',
+        prot_title: '削除拒否される保護ディレクトリ一覧',
+        prot_desc: '-rf オプションが付いていても、以下の重要パスの削除は拒否されます：',
+        prot_root: 'システムルート (/): rm -rf / による大惨事を防止',
+        prot_bin: 'システムの重要バイナリ実行ファイル',
+        prot_etc: 'システム設定、ブート、デバイスファイル',
+        prot_home: 'ユーザーのホームディレクトリ全体',
+        prot_mnt: 'マウントディスクのルート (WSL /mnt/c 等)',
+        prot_git: 'Git バージョン管理リポジトリ',
+        prot_lib: 'システム共有ライブラリおよびパッケージ',
+        prot_proc: 'プロセス仮想ファイルおよびシステムデータ',
+        prot_custom_title: '💡 カスタム保護ディレクトリの追加：',
+        prot_custom_desc: '環境変数で任意の保護パスを追加できます：',
+        opts_tag: 'オプション一覧',
+        opts_title: 'CLI オプションと環境変数設定',
+        opts_desc: '標準 rm コマンド互換に加え、便利な復元オプションを備えています。',
+        th_opt: 'オプション',
+        th_desc: '説明',
+        th_example: '使用例',
+        opt_r_desc: 'ディレクトリとその内容を再帰的にゴミ箱へ移動',
+        opt_f_desc: '確認メッセージを出さず強制移動（存在しないファイルは無視）',
+        opt_i_desc: '削除前に毎回確認プロンプトを表示',
+        opt_I_desc: '3 つ以上のファイルまたは再帰削除の前に 1 回確認',
+        opt_v_desc: '操作の詳細（移動元・移動先）をカラー出力',
+        opt_restore_desc: '<strong>[独自機能]</strong> 最後に削除したファイルを現在地に自動復元',
+        opt_restore_f_desc: '同名ファイルがあっても確認なしで上書き復元',
+        opt_ver_desc: 'バージョン情報またはヘルプマニュアルを表示',
+        env_table_title: '🛠️ 環境変数一覧',
+        th_env: '環境変数',
+        th_default: 'デフォルト値',
+        th_env_desc: '役割と説明',
+        env_trash_desc: 'ゴミ箱のルートディレクトリパスをカスタマイズ',
+        env_state_desc: '削除ログ deletion.log の保存先パス（XDG_STATE_HOME より優先）',
+        env_prot_desc: 'コロン区切りで追加の保護絶対パスを指定（例: /data:/secrets）',
+        comp_tag: '機能比較',
+        comp_title: '標準 rm vs better-rm',
+        comp_desc: 'better-rm を導入するメリットを比較表でご確認ください：',
+        comp_feature: '機能項目',
+        comp_native: 'システム標準 rm',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: '削除後のファイル復元',
+        comp_r1_n: '復元不可（即時完全消去）',
+        comp_r1_b: 'rm --restore で 1 コマンド復元',
+        comp_row2: 'ルートディレクトリ (/) の保護',
+        comp_r2_n: '--no-preserve-root で削除可能',
+        comp_r2_b: '例外なく強制ブロック',
+        comp_row3: 'Git (.git) の保護',
+        comp_r3_n: '無防備、一瞬でリポジトリ消失',
+        comp_r3_b: 'すべての .git を自動保護',
+        comp_row4: 'ゴミ箱内の階層保持',
+        comp_r4_n: 'なし',
+        comp_r4_b: '完全なパス階層＋ナノ秒タグ',
+        comp_row5: 'AI Agent 保護フック',
+        comp_r5_n: 'なし',
+        comp_r5_b: '主要 9 種類以上の AI を保護',
+        comp_row6: '構造化削除ログ',
+        comp_r6_n: '記録なし',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: 'POSIX オプション互換性',
+        comp_r7_n: '標準対応',
+        comp_r7_b: '100% 互換 (-rf, -i, -v)',
+        faq_tag: 'よくある質問',
+        faq_title: 'FAQ',
+        faq_desc: 'better-rm の安全性と日常的な使い方について。',
+        faq_q1: 'better-rm は /bin/rm を直接上書きしますか？',
+        faq_a1: 'いいえ。Shell の alias rm=... によるエイリアス動作です。システムの /bin/rm はそのまま保持され、必要時は /bin/rm や \\rm で呼び出せます。',
+        faq_q2: 'ゴミ箱を空にするにはどうすれば良いですか？',
+        faq_a2: '安全のため自動消去は行いません。ls -la ~/.Trash で確認後、/bin/rm -rf ~/.Trash/* で手動削除してください。',
+        faq_q3: '同名ファイルが衝突した場合はどうなりますか？',
+        faq_a3: 'ナノ秒タイムスタンプと MD5 ハッシュ（例: file.txt__20260819_143052_123456789__hash）が付与されるため、上書き事故は発生しません。',
+        faq_q4: 'AI Agent フックはどのように動作しますか？',
+        faq_a4: 'PreToolUse フックが Bash 実行前に引数を検査し、/ や $HOME、.git への危険な削除を即座にブロックします。',
+        footer_brand_desc: 'より安全で快適な rm コマンド。開発者と AI エージェントの大切なファイルを守ります。',
+        footer_links: '関連リンク',
+        footer_credits: 'コミュニティ',
+        toast_copied: 'クリップボードにコピーしました！'
+      },
+
+      'ko': {
+        flag: '🇰🇷',
+        label: '한국어',
+        nav_features: '주요기능',
+        nav_demo: '인터랙티브 데모',
+        nav_install: '설치 가이드',
+        nav_agents: 'AI Agent 보호',
+        nav_options: '옵션 설명',
+        nav_faq: '자주 묻는 질문',
+        hero_badge: '🛡️ 안전 • 초고속 • rm 완벽 호환 & AI 에이전트 보호',
+        hero_title: '더 안전하고 스마트한 <span class="highlight">rm 명령어</span>',
+        hero_desc: 'Linux 및 macOS를 위한 안전한 rm 대체 도구입니다. 파일을 즉시 영구 삭제하지 않고 경로 구조, 나노초 타임스탬프, 해시를 보존하며 휴지통으로 이동합니다. <code>rm --restore</code>로 손쉽게 복구하고 9개 이상의 AI 에이전트를 사전 보호합니다.',
+        quick_install_label: '한 줄 명령어로 빠른 설치',
+        copy_btn: '복사',
+        cta_get_started: '⚡ 바로 시작하기',
+        cta_try_demo: '💻 온라인 시뮬레이터 체험',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: '실행',
+        features_tag: '핵심 기능',
+        features_title: '왜 better-rm이 필요할까요?',
+        features_desc: '명령어 오타나 AI 에이전트의 잘못된 스크립트 실행으로 인한 파일 유실을 완벽 차단합니다.',
+        feat1_title: '원본 디렉터리 계층 구조 보존',
+        feat1_desc: '~/.Trash 아래에 원본 경로 구조를 그대로 유지하며 나노초 타임스탬프와 MD5 해시를 결합하여 파일명 덮어쓰기 충돌을 원천 방지합니다.',
+        feat2_title: '중요 시스템 및 Git 루트 보호',
+        feat2_desc: '/, /bin, /etc, /home, $HOME, /mnt 마운트 루트 및 프로젝트 내 모든 .git 디렉터리의 위험한 삭제를 단호하게 거부합니다.',
+        feat3_title: '한 줄 명령어로 즉시 복원',
+        feat3_desc: '실수로 지워도 안심하세요! rm --restore <파일명>을 실행하면 휴지통에서 최신 버전을 찾아 현재 폴더로 안전하게 복원합니다.',
+        feat4_title: '9+종 AI Coding Agent 안전 연동',
+        feat4_desc: 'Claude Code, Cursor, GitHub Copilot CLI, Codex 등 AI가 Bash 도구를 실행하기 전에 PreToolUse 훅으로 위험 명령을 사전 차단합니다.',
+        feat5_title: '구조화된 삭제 감사 로그',
+        feat5_desc: '~/.local/state/better-rm/deletion.log에 타임스탬프, 원본 경로, 휴지통 경로, 해시를 투명하게 기록합니다.',
+        feat6_title: 'POSIX rm 옵션 100% 호환',
+        feat6_desc: '-r, -R, -f, -i, -I, -v 등 표준 옵션을 그대로 지원하여 기존 습관과 셸 스크립트를 변경할 필요가 없습니다.',
+        agent_tag: 'AI 에이전트 보호',
+        agent_title: 'AI Coding Agent를 위한 든든한 안전 가드레일',
+        agent_desc: 'AI가 자동화 명령을 실행하기 직전 위험한 삭제 작업을 실시간으로 인터셉트하여 방어합니다.',
+        install_tag: '설치 방법',
+        install_title: '간편한 3가지 설치 방법',
+        install_desc: 'Linux, macOS, WSL, Bash 4.0+, Zsh 완벽 지원.',
+        recommended_badge: '추천',
+        inst_method1_title: '1. 원클릭 빠른 설치',
+        inst_method1_desc: '~/.better-rm에 자동 다운로드 후 Bash / Zsh 별칭(alias)을 자동 구성합니다.',
+        copy_install_btn: '명령어 복사',
+        inst_method2_title: '2. 수동 Git 클론 & 별칭',
+        inst_method2_desc: '가장 안전한 수동 설정 방식이며 /bin/rm 및 \\rm도 언제든 사용 가능합니다.',
+        copy_method_btn: '설정 코드 복사',
+        inst_method3_title: '3. 시스템 PATH 복사',
+        inst_method3_desc: '모든 프로그램에서 better-rm 명령어를 직접 호출하고자 할 때 유용합니다.',
+        copy_method_btn: '설정 코드 복사',
+        prot_tag: '보호 목록',
+        prot_title: '삭제가 거부되는 보호 디렉터리 목록',
+        prot_desc: '-rf 강제 옵션을 사용하더라도 아래 핵심 시스템 및 프로젝트 경로는 절대 삭제되지 않습니다:',
+        prot_root: '루트 디렉터리 (/): rm -rf / 재앙 완벽 방지',
+        prot_bin: '시스템 핵심 바이너리 실행 파일',
+        prot_etc: '시스템 설정, 부팅 및 디바이스 파일',
+        prot_home: '사용자 홈 디렉터리 전체',
+        prot_mnt: '마운트 드라이브 루트 (WSL /mnt/c 등 포함)',
+        prot_git: 'Git 버전 관리 데이터베이스 및 기록',
+        prot_lib: '시스템 공유 라이브러리 및 패키지',
+        prot_proc: '프로세스 가상 파일 및 시스템 데이터',
+        prot_custom_title: '💡 사용자 지정 보호 경로 추가:',
+        prot_custom_desc: '환경변수를 통해 원하는 경로를 추가할 수 있습니다:',
+        opts_tag: '옵션 목록',
+        opts_title: 'CLI 옵션 및 환경변수 레퍼런스',
+        opts_desc: '표준 rm 동작과 호환되며 강력한 복원 기능을 제공합니다.',
+        th_opt: '옵션',
+        th_desc: '설명',
+        th_example: '사용 예시',
+        opt_r_desc: '디렉터리와 그 내용을 재귀적으로 휴지통 계층으로 이동',
+        opt_f_desc: '확인 없이 강제 이동 (존재하지 않는 파일 무시)',
+        opt_i_desc: '삭제 전 매번 확인 프롬프트 표시',
+        opt_I_desc: '3개 이상의 파일 삭제 또는 재귀 삭제 시 한 번 확인',
+        opt_v_desc: '상세 작업 과정(이동 경로)을 컬러로 출력',
+        opt_restore_desc: '<strong>[전용 기능]</strong> 마지막으로 삭제한 파일을 현재 위치로 자동 복원',
+        opt_restore_f_desc: '동명 파일이 존재해도 확인 없이 덮어쓰며 복원',
+        opt_ver_desc: '버전 정보 또는 전체 도움말 매뉴얼 출력',
+        env_table_title: '🛠️ 환경변수 설정',
+        th_env: '환경변수',
+        th_default: '기본값',
+        th_env_desc: '역할 및 설명',
+        env_trash_desc: '삭제된 파일이 저장될 휴지통 루트 경로 지정',
+        env_state_desc: 'deletion.log 저장 경로 (XDG_STATE_HOME보다 우선)',
+        env_prot_desc: '콜론(:)으로 구분된 추가 보호 절대 경로 목록',
+        comp_tag: '기능 비교',
+        comp_title: '기본 rm vs better-rm',
+        comp_desc: 'better-rm 도입 시 얻을 수 있는 핵심 혜택을 확인하세요:',
+        comp_feature: '기능 비교 항목',
+        comp_native: '기본 /bin/rm',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: '삭제 후 파일 복구 능력',
+        comp_r1_n: '복구 불가 (영구 소멸)',
+        comp_r1_b: 'rm --restore 한 번으로 복구',
+        comp_row2: '루트 디렉터리 (/) 삭제 방지',
+        comp_r2_n: '--no-preserve-root 시 삭제됨',
+        comp_r2_b: '강력한 하드 블로킹',
+        comp_row3: '.git 디렉터리 보호',
+        comp_r3_n: '보호 장치 없음, 저장소 즉시 소실',
+        comp_r3_b: '모든 .git 자동 감지 및 보호',
+        comp_row4: '휴지통 내 원본 경로 보존',
+        comp_r4_n: '해당 없음',
+        comp_r4_b: '완벽한 계층 구조 + 나노초 태그',
+        comp_row5: 'AI Agent 안전 훅 연동',
+        comp_r5_n: '없음',
+        comp_r5_b: '주요 9+종 AI Agent 기본 지원',
+        comp_row6: '구조화된 감사 로그',
+        comp_r6_n: '기록 없음',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: 'POSIX 플래그 호환성',
+        comp_r7_n: '기본 지원',
+        comp_r7_b: '100% 호환 (-rf, -i, -v)',
+        faq_tag: '자주 묻는 질문',
+        faq_title: 'FAQ',
+        faq_desc: 'better-rm의 동작 원리와 안전성 및 팁.',
+        faq_q1: 'better-rm이 시스템의 /bin/rm 바이너리를 덮어쓰나요?',
+        faq_a1: '아닙니다. 셸의 alias rm=... 별칭을 사용하므로 시스템 /bin/rm은 온전히 유지되며, 필요시 /bin/rm 또는 \\rm으로 언제든 실행할 수 있습니다.',
+        faq_q2: '휴지통은 어떻게 비우나요?',
+        faq_a2: '안전을 위해 자동으로 비우지 않습니다. ls -la ~/.Trash로 확인 후 /bin/rm -rf ~/.Trash/* 명령어로 수동 정리할 수 있습니다.',
+        faq_q3: '동일한 이름의 파일 충돌은 어떻게 처리되나요?',
+        faq_a3: '나노초 타임스탬프와 MD5 해시(예: file.txt__20260819_143052_123456789__hash)가 자동 부여되어 중복 덮어쓰기 위험이 없습니다.',
+        faq_q4: 'AI Agent Hook은 어떻게 동작하나요?',
+        faq_a4: 'PreToolUse Hook이 Bash 도구 실행 전 인수를 검사하여 /, $HOME, .git 등을 향한 위험한 삭제를 사전에 즉시 거부합니다.',
+        footer_brand_desc: '더 안전하고 편리한 rm 명령어. 개발자와 AI 에이전트의 소중한 코드를 지킵니다.',
+        footer_links: '관련 링크',
+        footer_credits: '커뮤니티',
+        toast_copied: '클립보드에 복사되었습니다!'
+      },
+
+      'vi': {
+        flag: '🇻🇳',
+        label: 'Tiếng Việt',
+        nav_features: 'Tính năng',
+        nav_demo: 'Mô phỏng',
+        nav_install: 'Cài đặt',
+        nav_agents: 'AI Agent Hooks',
+        nav_options: 'Tùy chọn',
+        nav_faq: 'Hỏi đáp',
+        hero_badge: '🛡️ An toàn • Nhanh chóng • Tương thích hoàn toàn rm & AI Agent',
+        hero_title: 'Lệnh <span class="highlight">rm an toàn & tốt hơn</span> cho bạn',
+        hero_desc: 'Giải pháp thay thế an toàn cho lệnh rm trên Linux & macOS. Thay vì xóa vĩnh viễn, tệp được chuyển vào Thùng rác giữ nguyên cấu trúc thư mục, dấu thời gian nano và mã băm với lệnh <code>rm --restore</code> khôi phục tức thì.',
+        quick_install_label: 'Cài đặt nhanh 1 dòng lệnh',
+        copy_btn: 'Sao chép',
+        cta_get_started: '⚡ Bắt đầu ngay',
+        cta_try_demo: '💻 Trải nghiệm mô phỏng',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: 'Chạy',
+        features_tag: 'Tính năng chính',
+        features_title: 'Tại sao bạn nên dùng better-rm?',
+        features_desc: 'Không bao giờ lo lắng về việc vô tình xóa mất tệp quan trọng hay lỗi do AI gây ra.',
+        feat1_title: 'Giữ nguyên cấu trúc đường dẫn thư mục',
+        feat1_desc: 'Lưu giữ toàn bộ cấu trúc thư mục trong ~/.Trash với nhãn thời gian nano giây và mã băm MD5 để chống ghi đè.',
+        feat2_title: 'Bảo vệ thư mục hệ thống & .git',
+        feat2_desc: 'Chặn đứng các lệnh xóa nguy hiểm nhắm vào /, /bin, /etc, /home, $HOME, /mnt và các thư mục .git.',
+        feat3_title: 'Khôi phục tức thì bằng một lệnh',
+        feat3_desc: 'Chỉ cần chạy rm --restore <tên tệp> để lấy lại phiên bản xóa gần nhất vào thư mục hiện tại.',
+        feat4_title: 'Tích hợp bảo vệ cho 9+ AI Agent',
+        feat4_desc: 'Cung cấp hook PreToolUse chặn các lệnh xóa nguy hiểm từ Claude Code, Cursor, GitHub Copilot, Codex, v.v.',
+        feat5_title: 'Nhật ký xóa tệp có cấu trúc',
+        feat5_desc: 'Ghi lại lịch sử chi tiết tại ~/.local/state/better-rm/deletion.log theo chuẩn XDG.',
+        feat6_title: 'Tương thích 100% cờ lệnh rm',
+        feat6_desc: 'Hỗ trợ đầy đủ các cờ -r, -R, -f, -i, -I, -v mà không làm thay đổi thói quen dùng lệnh của bạn.',
+        agent_tag: 'Bảo vệ AI Agent',
+        agent_title: 'Lá chắn an toàn cho các AI Coding Agent',
+        agent_desc: 'Ngăn chặn tự động các hành vi xóa tệp phá hoại trước khi lệnh Bash được thực thi.',
+        install_tag: 'Hướng dẫn cài đặt',
+        install_title: 'Ba cách cài đặt đơn giản',
+        install_desc: 'Hỗ trợ Linux, macOS, WSL, Bash 4.0+ và Zsh.',
+        recommended_badge: 'Khuyên dùng',
+        inst_method1_title: '1. Cài đặt tự động một dòng',
+        inst_method1_desc: 'Tự động tải về ~/.better-rm và cấu hình alias cho Bash / Zsh.',
+        copy_install_btn: 'Sao chép lệnh cài đặt',
+        inst_method2_title: '2. Clone Git & cấu hình alias',
+        inst_method2_desc: 'Cách thủ công an toàn nhất, vẫn giữ nguyên /bin/rm và \\rm gốc.',
+        copy_method_btn: 'Sao chép mã thiết lập',
+        inst_method3_title: '3. Sao chép vào PATH hệ thống',
+        inst_method3_desc: 'Phù hợp để gọi trực tiếp lệnh better-rm từ mọi nơi.',
+        copy_method_btn: 'Sao chép mã thiết lập',
+        prot_tag: 'Bảo vệ',
+        prot_title: 'Danh sách thư mục được bảo vệ tuyệt đối',
+        prot_desc: 'Ngay cả khi dùng cờ ép buộc -rf, better-rm vẫn từ chối xóa các đường dẫn sau:',
+        prot_root: 'Thư mục gốc (/), chống thảm họa rm -rf /',
+        prot_bin: 'Các tệp thực thi nhị phân cốt lõi hệ thống',
+        prot_etc: 'Tệp cấu hình, khởi động và thiết bị hệ thống',
+        prot_home: 'Toàn bộ thư mục home của người dùng',
+        prot_mnt: 'Thư mục gắn ổ đĩa (gồm /mnt/c trên WSL)',
+        prot_git: 'Cơ sở dữ liệu quản lý phiên bản Git',
+        prot_lib: 'Thư viện dùng chung và gói phần mềm',
+        prot_proc: 'Tệp ảo tiến trình và dữ liệu động',
+        prot_custom_title: '💡 Tùy chỉnh thêm thư mục bảo vệ:',
+        prot_custom_desc: 'Thêm đường dẫn qua biến môi trường:',
+        opts_tag: 'Tùy chọn CLI',
+        opts_title: 'Bảng tra cứu tham số & cấu hình',
+        opts_desc: 'Tương thích hoàn toàn với chuẩn POSIX rm và bổ sung tính năng khôi phục.',
+        th_opt: 'Tùy chọn',
+        th_desc: 'Mô tả',
+        th_example: 'Ví dụ',
+        opt_r_desc: 'Xóa đệ quy thư mục và nội dung vào thùng rác',
+        opt_f_desc: 'Bắt buộc xóa, bỏ qua tệp không tồn tại, không hỏi xác nhận',
+        opt_i_desc: 'Hỏi xác nhận trước mỗi lần xóa',
+        opt_I_desc: 'Hỏi một lần khi xóa hơn 3 tệp hoặc xóa đệ quy',
+        opt_v_desc: 'Hiển thị chi tiết thao tác di chuyển bằng màu sắc',
+        opt_restore_desc: '<strong>[Độc quyền]</strong> Tự động khôi phục tệp bị xóa gần nhất',
+        opt_restore_f_desc: 'Khôi phục và ghi đè nếu tệp đích đã tồn tại',
+        opt_ver_desc: 'Hiển thị phiên bản hoặc hướng dẫn sử dụng',
+        env_table_title: '🛠️ Biến môi trường',
+        th_env: 'Biến',
+        th_default: 'Mặc định',
+        th_env_desc: 'Mục đích & Mô tả',
+        env_trash_desc: 'Đường dẫn thư mục thùng rác tùy chỉnh',
+        env_state_desc: 'Đường dẫn lưu nhật ký deletion.log',
+        env_prot_desc: 'Danh sách các đường dẫn bảo vệ bổ sung, ngăn cách bằng dấu hai chấm',
+        comp_tag: 'So sánh',
+        comp_title: 'rm gốc vs better-rm',
+        comp_desc: 'Những điểm nâng cấp vượt trội khi chuyển sang better-rm:',
+        comp_feature: 'Tính năng',
+        comp_native: 'Lệnh rm gốc',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: 'Khôi phục tệp sau khi xóa',
+        comp_r1_n: 'Không thể (bị xóa vĩnh viễn)',
+        comp_r1_b: 'Khôi phục ngay với rm --restore',
+        comp_row2: 'Bảo vệ thư mục gốc (/)',
+        comp_r2_n: '--no-preserve-root có thể xóa sạch',
+        comp_r2_b: 'Từ chối tuyệt đối',
+        comp_row3: 'Bảo vệ thư mục .git',
+        comp_r3_n: 'Không bảo vệ, mất repo ngay lập tức',
+        comp_r3_b: 'Tự động phát hiện và bảo vệ .git',
+        comp_row4: 'Giữ cấu trúc thư mục trong Thùng rác',
+        comp_r4_n: 'Không có',
+        comp_r4_b: 'Cấu trúc đầy đủ + nhãn thời gian nano',
+        comp_row5: 'Bảo vệ AI Coding Agent',
+        comp_r5_n: 'Không có',
+        comp_r5_b: 'Tích hợp sẵn hook cho 9+ AI Agent',
+        comp_row6: 'Nhật ký xóa có cấu trúc',
+        comp_r6_n: 'Không có',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: 'Tương thích cờ lệnh POSIX',
+        comp_r7_n: 'Gốc',
+        comp_r7_b: 'Tương thích 100% (-rf, -i, -v)',
+        faq_tag: 'Hỏi đáp',
+        faq_title: 'Câu hỏi thường gặp',
+        faq_desc: 'Mọi điều bạn cần biết về độ an toàn và cách sử dụng better-rm.',
+        faq_q1: 'better-rm có ghi đè tệp /bin/rm gốc của hệ thống không?',
+        faq_a1: 'Không. better-rm chỉ sử dụng alias rm=... trong shell. Tệp /bin/rm gốc vẫn nguyên vẹn và có thể dùng qua /bin/rm hoặc \\rm.',
+        faq_q2: 'Làm thế nào để dọn sạch Thùng rác?',
+        faq_a2: 'better-rm không tự ý xóa thùng rác để đảm bảo an toàn. Bạn có thể kiểm tra qua ls -la ~/.Trash và xóa bằng /bin/rm -rf ~/.Trash/*.',
+        faq_q3: 'Xử lý xung đột tên tệp như thế nào?',
+        faq_a3: 'better-rm tự động gắn thêm dấu thời gian nano và mã băm MD5 để không bao giờ bị ghi đè tệp trùng tên trong thùng rác.',
+        faq_q4: 'Hook AI Agent hoạt động thế nào?',
+        faq_a4: 'Hook PreToolUse kiểm tra tham số trước khi lệnh Bash chạy, chặn đứng ngay lập tức nếu phát hiện lệnh nhắm vào /, $HOME hoặc .git.',
+        footer_brand_desc: 'Lệnh rm an toàn và tốt hơn cho lập trình viên và các AI Agent.',
+        footer_links: 'Liên kết',
+        footer_credits: 'Cộng đồng',
+        toast_copied: 'Đã sao chép vào bộ nhớ tạm!'
+      },
+
+      'th': {
+        flag: '🇹🇭',
+        label: 'ไทย',
+        nav_features: 'คุณสมบัติ',
+        nav_demo: 'ตัวอย่างจำลอง',
+        nav_install: 'การติดตั้ง',
+        nav_agents: 'ความปลอดภัย AI',
+        nav_options: 'ตัวเลือก',
+        nav_faq: 'คำถามที่พบบ่อย',
+        hero_badge: '🛡️ ปลอดภัย • รวดเร็ว • ใช้งานแทน rm ได้ทันที & ป้องกัน AI',
+        hero_title: 'คำสั่ง <span class="highlight">rm ที่ดีกว่าและปลอดภัยกว่า</span>',
+        hero_desc: 'เครื่องมือทดแทน rm สำหรับ Linux & macOS ย้ายไฟล์ไปยังถังขยะโดยคงโครงสร้างโฟลเดอร์เดิม ประทับเวลาระดับนาโนวินาที และแฮช พร้อมคำสั่งกู้คืน <code>rm --restore</code> ในคำสั่งเดียว',
+        quick_install_label: 'ติดตั้งด่วนใน 1 บรรทัด',
+        copy_btn: 'คัดลอก',
+        cta_get_started: '⚡ เริ่มต้นใช้งาน',
+        cta_try_demo: '💻 ทดลองใช้งานจริง',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: 'รัน',
+        features_tag: 'จุดเด่น',
+        features_title: 'ทำไมคุณถึงควรใช้ better-rm?',
+        features_desc: 'ป้องกันความผิดพลาดจากการพิมพ์คำสั่งผิด หรือสคริปต์ AI ทำงานผิดพลาดได้อย่างสมบูรณ์',
+        feat1_title: 'คงโครงสร้างโฟลเดอร์เดิมทั้งหมด',
+        feat1_desc: 'เก็บไฟล์ใน ~/.Trash ตามโครงสร้างเดิมพร้อมแท็กเวลาและแฮช MD5 เพื่อป้องกันการเขียนทับชื่อไฟล์ซ้ำ',
+        feat2_title: 'ปกป้องระบบหลักและโฟลเดอร์ Git',
+        feat2_desc: 'ปฏิเสธการลบโฟลเดอร์สำคัญ เช่น /, /bin, /etc, /home, $HOME, /mnt และ .git ทั้งหมดอย่างเด็ดขาด',
+        feat3_title: 'กู้คืนไฟล์ได้ทันทีด้วย 1 คำสั่ง',
+        feat3_desc: 'เพียงใช้คำสั่ง rm --restore <ชื่อไฟล์> เพื่อกู้ไฟล์ล่าสุดกลับมายังโฟลเดอร์ปัจจุบัน',
+        feat4_title: 'รองรับ AI Coding Agent มากกว่า 9 ตัว',
+        feat4_desc: 'มี PreToolUse Hook ป้องกันคำสั่งอันตรายจาก Claude Code, Cursor, Copilot, Codex ฯลฯ',
+        feat5_title: 'บันทึกประวัติการลบอย่างละเอียด',
+        feat5_desc: 'บันทึกข้อมูลที่ ~/.local/state/better-rm/deletion.log ตามมาตรฐาน XDG',
+        feat6_title: 'รองรับพารามิเตอร์ rm เดิม 100%',
+        feat6_desc: 'รองรับ -r, -R, -f, -i, -I, -v ครบถ้วน ไม่ต้องเปลี่ยนความเคยชินในการใช้งาน',
+        agent_tag: 'ความปลอดภัย AI',
+        agent_title: 'ระบบป้องกันสำหรับ AI Coding Agent',
+        agent_desc: 'ตรวจสอบและสกัดกั้นคำสั่งลบไฟล์ที่อันตรายก่อนที่ระบบจะทำงานจริง',
+        install_tag: 'การติดตั้ง',
+        install_title: '3 วิธีติดตั้งที่ง่ายดาย',
+        install_desc: 'รองรับ Linux, macOS, WSL, Bash 4.0+ และ Zsh',
+        recommended_badge: 'แนะนำ',
+        inst_method1_title: '1. ติดตั้งด่วนอัตโนมัติ',
+        inst_method1_desc: 'ดาวน์โหลดลง ~/.better-rm และตั้งค่า alias ให้อัตโนมัติ',
+        copy_install_btn: 'คัดลอกคำสั่งติดตั้ง',
+        inst_method2_title: '2. Clone Git & ตั้งค่า Alias เอง',
+        inst_method2_desc: 'วิธีที่ปลอดภัย ยังคงเรียกใช้ /bin/rm เดิมได้เสมอ',
+        copy_method_btn: 'คัดลอกโค้ดตั้งค่า',
+        inst_method3_title: '3. คัดลอกไปยัง PATH ระบบ',
+        inst_method3_desc: 'เหมาะสำหรับการเรียกใช้ better-rm ได้จากทุกที่ในระบบ',
+        copy_method_btn: 'คัดลอกโค้ดตั้งค่า',
+        prot_tag: 'การป้องกัน',
+        prot_title: 'รายการโฟลเดอร์ที่ห้ามลบเด็ดขาด',
+        prot_desc: 'แม้จะใส่ -rf เพื่อบังคับลบ better-rm จะปฏิเสธการลบโฟลเดอร์เหล่านี้เสมอ:',
+        prot_root: 'โฟลเดอร์รูท (/) ป้องกันความเสียหายระดับทำลายระบบ',
+        prot_bin: 'ไฟล์โปรแกรมไบนารีหลักของระบบ',
+        prot_etc: 'ไฟล์คอนฟิกูเรชันและการบูตระบบ',
+        prot_home: 'โฟลเดอร์โฮมของผู้ใช้งานทั้งหมด',
+        prot_mnt: 'โฟลเดอร์เมานต์ดิสก์ (รวมถึง WSL /mnt/c)',
+        prot_git: 'ฐานข้อมูลและประวัติการพัฒนา Git',
+        prot_lib: 'ไลบรารีของระบบและแพ็กเกจเสริม',
+        prot_proc: 'ไฟล์ระบบเสมือนและข้อมูลการทำงาน',
+        prot_custom_title: '💡 กำหนดโฟลเดอร์คุ้มครองเพิ่มเติม:',
+        prot_custom_desc: 'เพิ่มโฟลเดอร์ผ่านตัวแปรสภาพแวดล้อม:',
+        opts_tag: 'พารามิเตอร์',
+        opts_title: 'คู่มือตัวเลือก CLI และการตั้งค่า',
+        opts_desc: 'ใช้งานเหมือนคำสั่ง rm ทั่วไป พร้อมคำสั่งกู้คืนไฟล์พิเศษ',
+        th_opt: 'ตัวเลือก',
+        th_desc: 'คำอธิบาย',
+        th_example: 'ตัวอย่าง',
+        opt_r_desc: 'ลบไดเรกทอรีและไฟล์ภายในทั้งหมดลงถังขยะ',
+        opt_f_desc: 'บังคับย้าย ข้ามไฟล์ที่ไม่มีอยู่ ไม่ถามยืนยัน',
+        opt_i_desc: 'ถามยืนยันก่อนลบทุกครั้ง',
+        opt_I_desc: 'ถามยืนยันเมื่อลบมากกว่า 3 ไฟล์หรือลบแบบโฟลเดอร์',
+        opt_v_desc: 'แสดงรายละเอียดการย้ายไฟล์พร้อมสีสัน',
+        opt_restore_desc: '<strong>[ฟังก์ชันพิเศษ]</strong> กู้คืนไฟล์ที่เพิ่งลบล่าสุดกลับมายังโฟลเดอร์ปัจจุบัน',
+        opt_restore_f_desc: 'กู้คืนและเขียนทับไฟล์เดิมทันทีโดยไม่ถามซ้ำ',
+        opt_ver_desc: 'แสดงเวอร์ชันหรือคู่มือช่วยเหลือ',
+        env_table_title: '🛠️ ตัวแปรสภาพแวดล้อม',
+        th_env: 'ตัวแปร',
+        th_default: 'ค่าเริ่มต้น',
+        th_env_desc: 'หน้าที่และการใช้งาน',
+        env_trash_desc: 'กำหนดตำแหน่งโฟลเดอร์ถังขยะที่ต้องการ',
+        env_state_desc: 'กำหนดตำแหน่งบันทึก deletion.log',
+        env_prot_desc: 'รายการโฟลเดอร์ที่ต้องการคุ้มครองเพิ่มเติม คั่นด้วยเครื่องหมาย :',
+        comp_tag: 'เปรียบเทียบ',
+        comp_title: 'rm เดิม vs better-rm',
+        comp_desc: 'ดูข้อดีเมื่อเปลี่ยนมาใช้ better-rm ในระบบของคุณ:',
+        comp_feature: 'คุณสมบัติ',
+        comp_native: 'rm เดิมของระบบ',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: 'การกู้คืนไฟล์หลังการลบ',
+        comp_r1_n: 'ทำไม่ได้ (ไฟล์หายถาวร)',
+        comp_r1_b: 'กู้คืนได้ทันทีด้วย rm --restore',
+        comp_row2: 'ป้องกันการลบโฟลเดอร์รูท (/)',
+        comp_r2_n: '--no-preserve-root อาจลบหมดระบบ',
+        comp_r2_b: 'บล็อกอย่างเด็ดขาด 100%',
+        comp_row3: 'ป้องกันโฟลเดอร์ .git',
+        comp_r3_n: 'ไม่มีการป้องกัน ซอร์สโค้ดหายทันที',
+        comp_r3_b: 'ตรวจจับและป้องกัน .git อัตโนมัติ',
+        comp_row4: 'คงโครงสร้างโฟลเดอร์ในถังขยะ',
+        comp_r4_n: 'ไม่มี',
+        comp_r4_b: 'คงโครงสร้างเดิม + แท็กเวลาละเอียด',
+        comp_row5: 'ระบบป้องกัน AI Agent',
+        comp_r5_n: 'ไม่มี',
+        comp_r5_b: 'มี Hook รองรับ AI มากกว่า 9 ตัว',
+        comp_row6: 'บันทึกประวัติการลบ',
+        comp_r6_n: 'ไม่มีบันทึก',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: 'ความเข้ากันได้ของคำสั่ง',
+        comp_r7_n: 'มาตรฐาน',
+        comp_r7_b: 'รองรับ 100% (-rf, -i, -v)',
+        faq_tag: 'คำถามที่พบบ่อย',
+        faq_title: 'FAQ',
+        faq_desc: 'ข้อมูลสำคัญเกี่ยวกับความปลอดภัยและการใช้งาน better-rm',
+        faq_q1: 'better-rm จะไปเขียนทับ /bin/rm ของระบบหรือไม่?',
+        faq_a1: 'ไม่ การติดตั้งมาตรฐานใช้เพียง alias rm=... เท่านั้น /bin/rm เดิมยังคงอยู่และสามารถเรียกใช้ได้ตลอดเวลาด้วย /bin/rm หรือ \\rm',
+        faq_q2: 'วิธีล้างถังขยะทำอย่างไร?',
+        faq_a2: 'better-rm จะไม่ลบไฟล์ในถังขยะเองเพื่อความปลอดภัย คุณสามารถตรวจดูด้วย ls -la ~/.Trash และล้างด้วย /bin/rm -rf ~/.Trash/*',
+        faq_q3: 'หากมีไฟล์ชื่อซ้ำกันจะเกิดปัญหาหรือไม่?',
+        faq_a3: 'ระบบจะต่อท้ายชื่อไฟล์ด้วยเวลาและ MD5 แฮช ทำให้ไม่มีปัญหาการเขียนทับไฟล์เดิมในถังขยะอย่างแน่นอน',
+        faq_q4: 'Hook ป้องกัน AI ทำงานอย่างไร?',
+        faq_a4: 'PreToolUse Hook จะตรวจสอบคำสั่งก่อนที่ AI จะรัน และบล็อกคำสั่งที่พยายามลบ /, $HOME หรือ .git ในทันที',
+        footer_brand_desc: 'คำสั่ง rm ที่ปลอดภัยและดียิ่งขึ้นสำหรับนักพัฒนาและ AI Agent ทั่วโลก',
+        footer_links: 'ลิงก์ที่เกี่ยวข้อง',
+        footer_credits: 'ชุมชนผู้พัฒนา',
+        toast_copied: 'คัดลอกลงคลิปบอร์ดแล้ว!'
+      },
+
+      'ms': {
+        flag: '🇲🇾',
+        label: 'Bahasa Melayu',
+        nav_features: 'Ciri-ciri',
+        nav_demo: 'Demo Interaktif',
+        nav_install: 'Panduan Pasang',
+        nav_agents: 'Perlindungan AI',
+        nav_options: 'Pilihan',
+        nav_faq: 'Soalan Lazim',
+        hero_badge: '🛡️ Selamat • Pantas • Sesuai Sepenuhnya rm & AI Agent',
+        hero_title: 'Perintah <span class="highlight">rm yang Lebih Baik & Selamat</span>',
+        hero_desc: 'Pengganti selamat untuk perintah rm pada Linux & macOS. Fail dialihkan ke Tong Sampah dengan mengekalkan hierarki laluan, cap masa nanosaat, dan cincangan tanpa memadam secara kekal, serta menyokong <code>rm --restore</code> untuk pemulihan pantas.',
+        quick_install_label: 'Pemasangan Pantas 1 Baris',
+        copy_btn: 'Salin',
+        cta_get_started: '⚡ Mula Sekarang',
+        cta_try_demo: '💻 Cuba Simulator',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: 'Jalankan',
+        features_tag: 'Ciri Utama',
+        features_title: 'Mengapa terminal anda perlukan better-rm?',
+        features_desc: 'Elakkan kehilangan fail penting akibat kesilapan menaip atau skrip AI yang tersilap.',
+        feat1_title: 'Mengekalkan Struktur Laluan Asal',
+        feat1_desc: 'Mengekalkan struktur direktori penuh di bawah ~/.Trash dengan cap masa nanosaat dan cincangan MD5 untuk mengelakkan konflik nama fail.',
+        feat2_title: 'Perlindungan Direktori Sistem & Git',
+        feat2_desc: 'Menolak pemadaman berisiko tinggi terhadap /, /bin, /etc, /home, $HOME, /mnt dan mana-mana direktori .git.',
+        feat3_title: 'Pemulihan Segera Satu Perintah',
+        feat3_desc: 'Jalankan rm --restore <nama fail> untuk memulihkan versi terkini fail yang dipadam ke direktori semasa dengan mudah.',
+        feat4_title: 'Cangkuk Keselamatan untuk 9+ AI Agent',
+        feat4_desc: 'Dilengkapi PreToolUse Hook untuk Claude Code, Cursor, Copilot, Codex dan lain-lain sebelum perintah Bash dijalankan.',
+        feat5_title: 'Log Audit Pemadaman Berstruktur',
+        feat5_desc: 'Merekodkan log terperinci di ~/.local/state/better-rm/deletion.log mengikut piawaian XDG.',
+        feat6_title: '100% Serasi Parameter rm Asal',
+        feat6_desc: 'Menyokong bendera -r, -R, -f, -i, -I, -v sepenuhnya tanpa mengubah tabiat harian anda.',
+        agent_tag: 'Keselamatan AI',
+        agent_title: 'Benteng Keselamatan untuk AI Coding Agent',
+        agent_desc: 'Menyekat operasi pemadaman berbahaya secara automatik sebelum arahan dilaksanakan oleh AI.',
+        install_tag: 'Pemasangan',
+        install_title: 'Tiga Cara Pemasangan Mudah',
+        install_desc: 'Menyokong Linux, macOS, WSL, Bash 4.0+ dan Zsh.',
+        recommended_badge: 'Disyorkan',
+        inst_method1_title: '1. Pemasangan Pantas Satu Baris',
+        inst_method1_desc: 'Muat turun ke ~/.better-rm dan konfigurasikan alias Bash / Zsh secara automatik.',
+        copy_install_btn: 'Salin Perintah Pemasangan',
+        inst_method2_title: '2. Klon Git & Tetapkan Alias Manual',
+        inst_method2_desc: 'Kaedah manual paling selamat, /bin/rm asal masih boleh diakses bila-bila masa.',
+        copy_method_btn: 'Salin Kod Persediaan',
+        inst_method3_title: '3. Salin ke PATH Sistem',
+        inst_method3_desc: 'Sesuai untuk membolehkan arahan better-rm dipanggil terus dari seluruh sistem.',
+        copy_method_btn: 'Salin Kod Persediaan',
+        prot_tag: 'Perlindungan',
+        prot_title: 'Senarai Direktori Dilindungi',
+        prot_desc: 'Walaupun menggunakan bendera -rf, better-rm tetap menolak pemadaman laluan berikut:',
+        prot_root: 'Direktori root (/), mencegah bencana rm -rf /',
+        prot_bin: 'Fail binari utama sistem',
+        prot_etc: 'Konfigurasi teras, but dan fail peranti',
+        prot_home: 'Keseluruhan direktori home pengguna',
+        prot_mnt: 'Titik lekapan cakera (termasuk /mnt/c WSL)',
+        prot_git: 'Pangkalan data kawalan versi Git',
+        prot_lib: 'Pustaka sistem dan pakej pihak ketiga',
+        prot_proc: 'Fail maya proses dan data dinamik sistem',
+        prot_custom_title: '💡 Tambah Direktori Dilindungi Tersuai:',
+        prot_custom_desc: 'Tambah laluan melalui pembolehubah persekitaran:',
+        opts_tag: 'Pilihan & Konfigurasi',
+        opts_title: 'Rujukan CLI & Pembolehubah Persekitaran',
+        opts_desc: 'Serasi sepenuhnya dengan rm POSIX dan disertakan ciri pemulihan fail.',
+        th_opt: 'Pilihan',
+        th_desc: 'Penerangan',
+        th_example: 'Contoh',
+        opt_r_desc: 'Padam direktori dan kandungannya secara rekursif ke dalam tong sampah',
+        opt_f_desc: 'Paksa pindah, abaikan fail tidak wujud, tiada pengesahan',
+        opt_i_desc: 'Minta pengesahan sebelum setiap pemadaman',
+        opt_I_desc: 'Minta pengesahan sekali jika memadam lebih 3 fail atau rekursif',
+        opt_v_desc: 'Tunjukkan butiran operasi pemindahan dengan warna',
+        opt_restore_desc: '<strong>[Eksklusif]</strong> Pulihkan fail yang baru dipadam ke direktori semasa',
+        opt_restore_f_desc: 'Pulihkan dan tulis ganti tanpa pengesahan jika fail sudah wujud',
+        opt_ver_desc: 'Papar maklumat versi atau manual bantuan penuh',
+        env_table_title: '🛠️ Pembolehubah Persekitaran',
+        th_env: 'Pembolehubah',
+        th_default: 'Nilai Lalai',
+        th_env_desc: 'Fungsi & Penerangan',
+        env_trash_desc: 'Laluan direktori tong sampah tersuai',
+        env_state_desc: 'Laluan fail log deletion.log',
+        env_prot_desc: 'Senarai laluan terlindung tambahan, dipisahkan dengan tanda noktah bertindih (:)',
+        comp_tag: 'Perbandingan',
+        comp_title: 'rm Asal vs better-rm',
+        comp_desc: 'Kelebihan utama apabila beralih kepada better-rm:',
+        comp_feature: 'Ciri-ciri',
+        comp_native: 'rm Asal Sistem',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: 'Pemulihan fail selepas dipadam',
+        comp_r1_n: 'Mustahil (dipadam kekal serta-merta)',
+        comp_r1_b: 'Pulih segera dengan rm --restore',
+        comp_row2: 'Perlindungan direktori root (/)',
+        comp_r2_n: '--no-preserve-root boleh memadam sistem',
+        comp_r2_b: 'Disekat sepenuhnya',
+        comp_row3: 'Perlindungan direktori .git',
+        comp_r3_n: 'Tiada perlindungan, repo hilang terus',
+        comp_r3_b: 'Kesan dan lindungi semua .git',
+        comp_row4: 'Kekal hierarki dalam Tong Sampah',
+        comp_r4_n: 'Tiada',
+        comp_r4_b: 'Struktur penuh + tag nanosaat',
+        comp_row5: 'Perlindungan AI Coding Agent',
+        comp_r5_n: 'Tiada',
+        comp_r5_b: 'Hook terbina dalam untuk 9+ AI Agent',
+        comp_row6: 'Log audit berstruktur',
+        comp_r6_n: 'Tiada log',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: 'Keserasian bendera POSIX',
+        comp_r7_n: 'Asal',
+        comp_r7_b: '100% serasi (-rf, -i, -v)',
+        faq_tag: 'Soalan Lazim',
+        faq_title: 'FAQ',
+        faq_desc: 'Maklumat penting tentang keselamatan dan penggunaan better-rm.',
+        faq_q1: 'Adakah better-rm menggantikan /bin/rm sistem secara kekal?',
+        faq_a1: 'Tidak. Pemasangan disyorkan hanya menggunakan alias rm=... dalam shell. Perintah /bin/rm asal masih kekal dan boleh digunakan melalui /bin/rm atau \\rm.',
+        faq_q2: 'Bagaimanakah cara mengosongkan Tong Sampah?',
+        faq_a2: 'better-rm tidak memadam tong sampah secara automatik demi keselamatan. Semak dengan ls -la ~/.Trash dan kosongkan dengan /bin/rm -rf ~/.Trash/*.',
+        faq_q3: 'Bagaimanakah pertindihan nama fail dikendalikan?',
+        faq_a3: 'better-rm menambah cap masa nanosaat dan cincangan MD5 secara automatik untuk memastikan tiada fail ditindih dalam tong sampah.',
+        faq_q4: 'Bagaimanakah cangkuk AI Agent berfungsi?',
+        faq_a4: 'PreToolUse Hook menyemak arahan sebelum alat Bash dijalankan, dan menyekat sebarang cubaan memadam /, $HOME atau .git serta-merta.',
+        footer_brand_desc: 'Perintah rm yang lebih baik dan selamat untuk pembangun dan AI Agent.',
+        footer_links: 'Pautan Berkaitan',
+        footer_credits: 'Komuniti',
+        toast_copied: 'Disalin ke papan keratan!'
+      },
+
+      'id': {
+        flag: '🇮🇩',
+        label: 'Bahasa Indonesia',
+        nav_features: 'Fitur',
+        nav_demo: 'Demo Interaktif',
+        nav_install: 'Panduan Instalasi',
+        nav_agents: 'Proteksi AI Agent',
+        nav_options: 'Opsi CLI',
+        nav_faq: 'FAQ',
+        hero_badge: '🛡️ Aman • Cepat • Kompatibel Penuh dengan rm & AI Agent',
+        hero_title: 'Perintah <span class="highlight">rm yang Lebih Baik & Aman</span>',
+        hero_desc: 'Solusi aman pengganti perintah rm untuk Linux & macOS. Tidak menghapus file secara permanen, melainkan memindahkannya ke Sampah dengan mempertahankan struktur direktori, stempel waktu nanodetik, hash MD5, serta perintah pemulihan <code>rm --restore</code> instan.',
+        quick_install_label: 'Instalasi Cepat 1 Baris',
+        copy_btn: 'Salin',
+        cta_get_started: '⚡ Mulai Sekarang',
+        cta_try_demo: '💻 Coba Simulator',
+        demo_btn_safe: '🗑️ rm draft.txt',
+        demo_btn_block: '🛑 rm -rf /',
+        demo_btn_git: '🚫 rm -rf .git',
+        demo_btn_restore: '🔄 rm --restore',
+        demo_btn_log: '📜 cat log',
+        run_btn: 'Jalankan',
+        features_tag: 'Fitur Utama',
+        features_title: 'Mengapa terminal Anda membutuhkan better-rm?',
+        features_desc: 'Lindungi kode dan data penting Anda dari kesalahan ketik atau skrip AI yang tidak terkendali.',
+        feat1_title: 'Pertahankan Struktur Direktori Asli',
+        feat1_desc: 'Menyimpan struktur folder lengkap di bawah ~/.Trash dengan cap waktu nanodetik dan hash MD5 untuk menghindari konflik penimpaan file.',
+        feat2_title: 'Proteksi Direktori Sistem & Git',
+        feat2_desc: 'Memblokir secara mutlak penghapusan berbahaya terhadap /, /bin, /etc, /home, $HOME, /mnt, dan semua folder .git.',
+        feat3_title: 'Pemulihan Instan Satu Perintah',
+        feat3_desc: 'Cukup jalankan rm --restore <nama_file> untuk mengembalikan file yang baru saja terhapus ke direktori saat ini.',
+        feat4_title: 'Proteksi Hook untuk 9+ AI Agent',
+        feat4_desc: 'Dilengkapi PreToolUse Hook untuk Claude Code, Cursor, GitHub Copilot, Codex, Grok, dll. sebelum perintah Bash dieksekusi.',
+        feat5_title: 'Log Audit Penghapusan Terstruktur',
+        feat5_desc: 'Mencatat riwayat detail di ~/.local/state/better-rm/deletion.log sesuai standar XDG.',
+        feat6_title: '100% Kompatibel dengan Parameter rm',
+        feat6_desc: 'Mendukung penuh opsi -r, -R, -f, -i, -I, -v tanpa mengubah kebiasaan atau skrip shell Anda.',
+        agent_tag: 'Proteksi AI Agent',
+        agent_title: 'Pagar Pengaman untuk AI Coding Agent',
+        agent_desc: 'Mencegah perintah penghapusan berbahaya secara otomatis sebelum dieksekusi oleh AI.',
+        install_tag: 'Instalasi',
+        install_title: 'Tiga Cara Instalasi Mudah',
+        install_desc: 'Mendukung Linux, macOS, WSL, Bash 4.0+, dan Zsh.',
+        recommended_badge: 'Direkomendasikan',
+        inst_method1_title: '1. Instalasi Otomatis Cepat',
+        inst_method1_desc: 'Mengunduh otomatis ke ~/.better-rm dan mengatur alias Bash / Zsh secara instan.',
+        copy_install_btn: 'Salin Perintah Instalasi',
+        inst_method2_title: '2. Klon Git & Konfigurasi Alias',
+        inst_method2_desc: 'Metode manual paling aman, /bin/rm bawaan sistem tetap dapat diakses kapan saja.',
+        copy_method_btn: 'Salin Kode Pengaturan',
+        inst_method3_title: '3. Salin ke PATH Sistem',
+        inst_method3_desc: 'Cocok agar perintah better-rm dapat dipanggil langsung secara global.',
+        copy_method_btn: 'Salin Kode Pengaturan',
+        prot_tag: 'Proteksi',
+        prot_title: 'Daftar Direktori yang Dilindungi Mutlak',
+        prot_desc: 'Meskipun menggunakan opsi paksa -rf, better-rm tetap menolak penghapusan jalur berikut:',
+        prot_root: 'Direktori root (/), mencegah bencana rm -rf /',
+        prot_bin: 'File biner eksekusi sistem',
+        prot_etc: 'Konfigurasi sistem, boot, dan file perangkat',
+        prot_home: 'Seluruh direktori home pengguna',
+        prot_mnt: 'Titik mount disk (termasuk /mnt/c pada WSL)',
+        prot_git: 'Database repositori dan riwayat Git',
+        prot_lib: 'Pustaka sistem dan paket pihak ketiga',
+        prot_proc: 'File virtual proses dan data dinamis sistem',
+        prot_custom_title: '💡 Tambahkan Direktori Terlindungi:',
+        prot_custom_desc: 'Tambahkan jalur melalui variabel lingkungan:',
+        opts_tag: 'Opsi CLI',
+        opts_title: 'Referensi Opsi CLI & Konfigurasi',
+        opts_desc: 'Kompatibel penuh dengan standar POSIX rm dan dilengkapi fitur pemulihan.',
+        th_opt: 'Opsi',
+        th_desc: 'Deskripsi',
+        th_example: 'Contoh',
+        opt_r_desc: 'Hapus direktori dan isinya secara rekursif ke direktori Sampah',
+        opt_f_desc: 'Paksa pindah, abaikan file yang tidak ada, tanpa konfirmasi',
+        opt_i_desc: 'Minta konfirmasi sebelum setiap penghapusan',
+        opt_I_desc: 'Minta konfirmasi satu kali jika menghapus lebih dari 3 file atau rekursif',
+        opt_v_desc: 'Tampilkan detail pemindahan file secara berwarna',
+        opt_restore_desc: '<strong>[Fitur Eksklusif]</strong> Pulihkan file terakhir yang dihapus ke direktori saat ini',
+        opt_restore_f_desc: 'Pulihkan dan timpa tanpa konfirmasi jika file sudah ada',
+        opt_ver_desc: 'Tampilkan informasi versi atau manual bantuan lengkap',
+        env_table_title: '🛠️ Variabel Lingkungan',
+        th_env: 'Variabel',
+        th_default: 'Nilai Default',
+        th_env_desc: 'Fungsi & Deskripsi',
+        env_trash_desc: 'Lokasi kustom direktori Sampah',
+        env_state_desc: 'Lokasi file deletion.log (mengabaikan XDG_STATE_HOME)',
+        env_prot_desc: 'Daftar jalur tambahan yang dilindungi, dipisahkan tanda titik dua (:)',
+        comp_tag: 'Perbandingan',
+        comp_title: 'rm Bawaan vs better-rm',
+        comp_desc: 'Kelebihan utama saat Anda beralih ke better-rm:',
+        comp_feature: 'Fitur',
+        comp_native: 'rm Bawaan Sistem',
+        comp_better: 'better-rm 🛡️',
+        comp_row1: 'Pemulihan file setelah dihapus',
+        comp_r1_n: 'Mustahil (dihapus permanen)',
+        comp_r1_b: 'Pulihkan instan dengan rm --restore',
+        comp_row2: 'Proteksi direktori root (/)',
+        comp_r2_n: '--no-preserve-root dapat menghapus sistem',
+        comp_r2_b: 'Ditolak secara mutlak',
+        comp_row3: 'Proteksi direktori .git',
+        comp_r3_n: 'Tanpa proteksi, repositori langsung lenyap',
+        comp_r3_b: 'Deteksi dan proteksi otomatis semua .git',
+        comp_row4: 'Pertahankan hierarki di Sampah',
+        comp_r4_n: 'Tidak ada',
+        comp_r4_b: 'Struktur penuh + tag nanodetik',
+        comp_row5: 'Proteksi AI Coding Agent',
+        comp_r5_n: 'Tidak ada',
+        comp_r5_b: 'Hook bawaan untuk 9+ AI Agent',
+        comp_row6: 'Log audit terstruktur',
+        comp_r6_n: 'Tidak ada log',
+        comp_r6_b: '~/.local/state/better-rm/deletion.log',
+        comp_row7: 'Kompatibilitas opsi POSIX',
+        comp_r7_n: 'Bawaan',
+        comp_r7_b: '100% kompatibel (-rf, -i, -v)',
+        faq_tag: 'FAQ',
+        faq_title: 'Pertanyaan yang Sering Diajukan',
+        faq_desc: 'Informasi seputar keamanan dan cara penggunaan better-rm.',
+        faq_q1: 'Apakah better-rm menimpa biner /bin/rm bawaan sistem?',
+        faq_a1: 'Tidak. Instalasi resmi hanya menggunakan alias rm=... pada shell. Perintah /bin/rm asli tetap utuh dan dapat dipanggil kapan saja melalui /bin/rm atau \\rm.',
+        faq_q2: 'Bagaimana cara membersihkan atau mengosongkan Sampah?',
+        faq_a2: 'better-rm tidak menghapus file di sampah secara otomatis demi keamanan. Periksa dengan ls -la ~/.Trash dan bersihkan menggunakan /bin/rm -rf ~/.Trash/*.',
+        faq_q3: 'Bagaimana jika terjadi konflik nama file yang sama?',
+        faq_a3: 'better-rm otomatis menambahkan cap waktu nanodetik dan hash MD5 (misalnya file.txt__20260819_143052_123456789__hash) sehingga tidak akan terjadi tumpang tindih file.',
+        faq_q4: 'Bagaimana cara kerja Hook AI Agent?',
+        faq_a4: 'PreToolUse Hook memeriksa perintah sebelum dieksekusi oleh Bash dan langsung menolak jika mendeteksi upaya penghapusan terhadap /, $HOME, atau .git.',
+        footer_brand_desc: 'Perintah rm yang lebih baik dan aman untuk developer dan AI Agent di seluruh dunia.',
+        footer_links: 'Tautan Terkait',
+        footer_credits: 'Komunitas',
+        toast_copied: 'Disalin ke papan klip!'
+      }
+    };
+
+    /* ==========================================================================
+       Language Detection & Switching Engine
+       ========================================================================== */
+    const supportedLangs = ['zh-tw', 'zh-cn', 'en', 'ja', 'ko', 'vi', 'th', 'ms', 'id'];
+    let currentLang = 'zh-tw';
+
+    function detectBrowserLanguage() {
+      // 1. Check localStorage first
+      const savedLang = localStorage.getItem('better_rm_lang');
+      if (savedLang && supportedLangs.includes(savedLang)) {
+        return savedLang;
+      }
+
+      // 2. Check browser navigator languages
+      const browserLangs = navigator.languages || [navigator.language || ''];
+      for (const raw of browserLangs) {
+        if (!raw) continue;
+        const l = raw.toLowerCase();
+        if (l.startsWith('zh-tw') || l.startsWith('zh-hk') || l.startsWith('zh-mo') || l.includes('hant')) return 'zh-tw';
+        if (l.startsWith('zh')) return 'zh-cn';
+        if (l.startsWith('ja')) return 'ja';
+        if (l.startsWith('ko')) return 'ko';
+        if (l.startsWith('vi')) return 'vi';
+        if (l.startsWith('th')) return 'th';
+        if (l.startsWith('ms')) return 'ms';
+        if (l.startsWith('id') || l.startsWith('in')) return 'id';
+        if (l.startsWith('en')) return 'en';
+      }
+
+      return 'zh-tw';
+    }
+
+    function setLanguage(lang) {
+      if (!I18N[lang]) lang = 'zh-tw';
+      currentLang = lang;
+      localStorage.setItem('better_rm_lang', lang);
+      document.documentElement.lang = lang;
+
+      const dict = I18N[lang];
+      document.getElementById('currentLangFlag').textContent = dict.flag;
+      document.getElementById('currentLangLabel').textContent = dict.label;
+
+      // Update all data-i18n elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          el.innerHTML = dict[key];
+        }
+      });
+
+      // Update active state in dropdown
+      document.querySelectorAll('.lang-option').forEach(opt => {
+        if (opt.getAttribute('data-lang') === lang) {
+          opt.classList.add('selected');
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
+    }
+
+    // Language dropdown toggle
+    const langBtn = document.getElementById('langBtn');
+    const langDropdown = document.getElementById('langDropdown');
+
+    langBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langDropdown.classList.toggle('active');
+    });
+
+    document.querySelectorAll('.lang-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const lang = opt.getAttribute('data-lang');
+        setLanguage(lang);
+        langDropdown.classList.remove('active');
+      });
+    });
+
+    document.addEventListener('click', () => {
+      langDropdown.classList.remove('active');
+    });
+
+    /* ==========================================================================
+       Theme Toggle Engine (Dark / Light)
+       ========================================================================== */
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('better_rm_theme');
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        applyTheme(savedTheme);
+      } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      }
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('better_rm_theme', theme);
+      themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    /* ==========================================================================
+       Toast Notification Engine
+       ========================================================================== */
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>✓</span> <span>${msg}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(12px)';
+        toast.style.transition = 'all 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 2500);
+    }
+
+    function copyCode(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const dict = I18N[currentLang] || I18N['zh-tw'];
+        showToast(dict.toast_copied || 'Copied to clipboard!');
+      });
+    }
+
+    /* ==========================================================================
+       Hero Install Tabs & Copy
+       ========================================================================== */
+    const tabCurl = document.getElementById('tabCurl');
+    const tabWget = document.getElementById('tabWget');
+    const installCmdText = document.getElementById('installCmdText');
+    const copyHeroBtn = document.getElementById('copyHeroBtn');
+
+    const curlCmd = 'curl -sSL https://raw.githubusercontent.com/doggy8088/better-rm/main/install.sh | bash';
+    const wgetCmd = 'wget -qO- https://raw.githubusercontent.com/doggy8088/better-rm/main/install.sh | bash';
+
+    tabCurl.addEventListener('click', () => {
+      tabCurl.classList.add('active');
+      tabWget.classList.remove('active');
+      installCmdText.textContent = curlCmd;
+    });
+
+    tabWget.addEventListener('click', () => {
+      tabWget.classList.add('active');
+      tabCurl.classList.remove('active');
+      installCmdText.textContent = wgetCmd;
+    });
+
+    copyHeroBtn.addEventListener('click', () => {
+      copyCode(installCmdText.textContent);
+    });
+
+    /* ==========================================================================
+       Interactive Live Terminal Playground
+       ========================================================================== */
+    const termOutput = document.getElementById('termOutput');
+    const termInput = document.getElementById('termInput');
+    const termRunBtn = document.getElementById('termRunBtn');
+
+    function appendTermLine(html) {
+      const div = document.createElement('div');
+      div.className = 'term-line';
+      div.innerHTML = html;
+      termOutput.appendChild(div);
+      termOutput.scrollTop = termOutput.scrollHeight;
+    }
+
+    function runCommand(cmd) {
+      cmd = cmd.trim();
+      if (!cmd) return;
+
+      appendTermLine(`<span class="term-prompt">user@workstation</span>:<span class="term-path">~/project</span>$ <span class="term-cmd">${escapeHtml(cmd)}</span>`);
+
+      const clean = cmd.replace(/\s+/g, ' ');
+
+      if (clean === 'rm draft.txt' || clean === 'rm -v draft.txt' || clean === 'better-rm draft.txt') {
+        setTimeout(() => {
+          appendTermLine(`<span class="term-success">✓ 移動 (Moved): 'draft.txt' -> '~/.Trash/home/user/project/draft.txt__20260819_143052_123456789__e59ff97941044f85df5297e1c302d260'</span>`);
+          appendTermLine(`<span class="term-info">ℹ 刪除日誌已寫入 ~/.local/state/better-rm/deletion.log</span>`);
+        }, 150);
+      } else if (clean.includes('rm -rf /') || clean.includes('rm -r /') || clean === 'rm /') {
+        setTimeout(() => {
+          appendTermLine(`<span class="term-error">錯誤 (Error): 拒絕刪除受保護的目錄: '/'</span>`);
+          appendTermLine(`<span class="term-error">錯誤 (Error): Refused to remove protected directory: '/'</span>`);
+          appendTermLine(`<span class="term-error">錯誤 (Error): 這是一個重要的系統目錄或專案目錄！</span>`);
+          appendTermLine(`<span class="term-warning">🛑 [CRITICAL PROTECTION] Command blocked immediately.</span>`);
+        }, 150);
+      } else if (clean.includes('.git')) {
+        setTimeout(() => {
+          appendTermLine(`<span class="term-error">錯誤 (Error): 拒絕刪除受保護的目錄: '.git'</span>`);
+          appendTermLine(`<span class="term-error">錯誤 (Error): Refused to remove protected directory: '.git'</span>`);
+          appendTermLine(`<span class="term-warning">🛑 [GIT SAFEGUARD] Version control database is protected.</span>`);
+        }, 150);
+      } else if (clean.includes('--restore') || clean.includes('restore')) {
+        setTimeout(() => {
+          appendTermLine(`<span class="term-info">正在尋找垃圾桶中的最新備份: draft.txt ...</span>`);
+          appendTermLine(`<span class="term-success">✓ 成功還原 (Restored): draft.txt -> /home/user/project/draft.txt</span>`);
+        }, 150);
+      } else if (clean.includes('cat log') || clean.includes('deletion.log')) {
+        setTimeout(() => {
+          appendTermLine(`<span class="term-info">--- ~/.local/state/better-rm/deletion.log ---</span>`);
+          appendTermLine(`20260819_143052_123456789 | /home/user/project/draft.txt | ~/.Trash/.../draft.txt__... | e59ff979... | file`);
+        }, 150);
+      } else if (clean === 'ls' || clean === 'ls -la') {
+        setTimeout(() => {
+          appendTermLine(`app.js  package.json  .git/  (draft.txt 已移至垃圾桶)`);
+        }, 100);
+      } else if (clean === 'clear') {
+        termOutput.innerHTML = '';
+      } else {
+        setTimeout(() => {
+          appendTermLine(`<span class="term-success">✓ 移動 (Moved): '${escapeHtml(cmd.replace('rm ', ''))}' -> ~/.Trash/...</span>`);
+        }, 150);
+      }
+
+      termInput.value = '';
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    termRunBtn.addEventListener('click', () => runCommand(termInput.value));
+    termInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') runCommand(termInput.value);
+    });
+
+    document.getElementById('btnDemoSafe').addEventListener('click', () => runCommand('rm draft.txt'));
+    document.getElementById('btnDemoBlock').addEventListener('click', () => runCommand('rm -rf /'));
+    document.getElementById('btnDemoGit').addEventListener('click', () => runCommand('rm -rf .git'));
+    document.getElementById('btnDemoRestore').addEventListener('click', () => runCommand('rm --restore draft.txt'));
+    document.getElementById('btnDemoLog').addEventListener('click', () => runCommand('cat deletion.log'));
+
+    /* ==========================================================================
+       AI Agent Switcher Hub Data & Logic
+       ========================================================================== */
+    const AGENT_DATA = {
+      claude: {
+        name: 'Claude Code',
+        configPath: '.claude/settings.json',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a claude',
+        snippet: `{\n  "hooks": {\n    "PreToolUse": [\n      {\n        "matcher": "Bash",\n        "hooks": [\n          {\n            "type": "command",\n            "command": "node \\"$(git rev-parse --show-toplevel)/hooks/protect-important-paths.js\\"",\n            "timeout": 5,\n            "statusMessage": "Checking protected directories..."\n          }\n        ]\n      }\n    ]\n  }\n}`
+      },
+      cursor: {
+        name: 'Cursor',
+        configPath: '.cursor/hooks.json',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a cursor',
+        snippet: `{\n  "version": 1,\n  "hooks": {\n    "beforeShellExecution": [\n      {\n        "command": "node \\"$(git rev-parse --show-toplevel)/hooks/protect-important-paths.js\\"",\n        "matcher": ".*"\n      }\n    ]\n  }\n}`
+      },
+      copilot: {
+        name: 'GitHub Copilot CLI',
+        configPath: '.github/hooks/better-rm.json',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a copilot',
+        snippet: `{\n  "version": 1,\n  "hooks": {\n    "preToolUse": [\n      {\n        "type": "command",\n        "bash": "node \\"$(git rev-parse --show-toplevel)/hooks/protect-important-paths.js\\"",\n        "powershell": "node \\"$(git rev-parse --show-toplevel)\\\\hooks\\\\protect-important-paths.js\\"",\n        "matcher": "bash|powershell",\n        "timeoutSec": 5\n      }\n    ]\n  }\n}`
+      },
+      codex: {
+        name: 'Codex',
+        configPath: '.codex/hooks.json',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a codex',
+        snippet: `{\n  "hooks": {\n    "PreToolUse": [\n      {\n        "matcher": "Bash",\n        "hooks": [\n          {\n            "type": "command",\n            "command": "node \\"$(git rev-parse --show-toplevel)/hooks/protect-important-paths.js\\""\n          }\n        ]\n      }\n    ]\n  }\n}`
+      },
+      antigravity: {
+        name: 'Google Antigravity',
+        configPath: '.agents/hooks.json',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a antigravity',
+        snippet: `{\n  "better-rm-protection": {\n    "PreToolUse": [\n      {\n        "matcher": "run_command",\n        "hooks": [\n          {\n            "type": "command",\n            "command": "node \\"$(git rev-parse --show-toplevel)/hooks/protect-important-paths.js\\"",\n            "timeout": 5\n          }\n        ]\n      }\n    ]\n  }\n}`
+      },
+      grok: {
+        name: 'Grok Build',
+        configPath: '.grok/hooks/better-rm.json',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a grok',
+        snippet: `{\n  "hooks": {\n    "PreToolUse": [\n      {\n        "matcher": "Bash",\n        "hooks": [\n          {\n            "type": "command",\n            "command": "node \\"$(git rev-parse --show-toplevel)/hooks/protect-important-paths.js\\"",\n            "timeout": 5\n          }\n        ]\n      }\n    ]\n  }\n}`
+      },
+      opencode: {
+        name: 'OpenCode',
+        configPath: '.opencode/plugins/protect-important-paths.ts',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a opencode',
+        snippet: `import type { Plugin } from "@opencode-ai/plugin";\n// @ts-ignore\nimport { evaluate } from "../../hooks/protect-important-paths";\n\nexport const ProtectImportantPathsPlugin: Plugin = async (ctx) => {\n  return {\n    "tool.execute.before": async (input, output) => {\n      if (input.tool === "bash") {\n        const payload = { tool_input: { command: output.args.command }, cwd: process.cwd() };\n        const res = evaluate(payload);\n        if (res?.hookSpecificOutput?.permissionDecision === "deny") {\n          throw new Error(res.hookSpecificOutput.permissionDecisionReason);\n        }\n      }\n    }\n  };\n};`
+      },
+      pi: {
+        name: 'Pi Coding Agent',
+        configPath: '.omp/hooks/pre/protect-important-paths.ts',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a pi',
+        snippet: `import type { HookAPI } from "@oh-my-pi/pi-coding-agent/extensibility/hooks";\n// @ts-ignore\nimport { evaluate } from "../../../hooks/protect-important-paths";\n\nexport default function hook(pi: HookAPI): void {\n  pi.on("tool_call", async (event, ctx) => {\n    if (event.toolName === "bash") {\n      const res = evaluate({ tool_input: { command: event.input.command }, cwd: process.cwd() });\n      if (res?.hookSpecificOutput?.permissionDecision === "deny") {\n        return { block: true, reason: res.hookSpecificOutput.permissionDecisionReason };\n      }\n    }\n  });\n}`
+      },
+      qoder: {
+        name: 'Qoder',
+        configPath: '.qoder/settings.json',
+        installCmd: 'curl -sSL https://github.com/doggy8088/better-rm/releases/latest/download/install-hooks.sh | bash -s -- -a qoder',
+        snippet: `{\n  "hooks": {\n    "PreToolUse": [\n      {\n        "matcher": "Bash",\n        "hooks": [\n          {\n            "type": "command",\n            "command": "node \\"$(git rev-parse --show-toplevel)/hooks/protect-important-paths.js\\""\n          }\n        ]\n      }\n    ]\n  }\n}`
+      }
+    };
+
+    const agentChips = document.querySelectorAll('.agent-chip');
+    const agentNameLabel = document.getElementById('agentNameLabel');
+    const agentConfigPath = document.getElementById('agentConfigPath');
+    const agentInstallCmdText = document.getElementById('agentInstallCmdText');
+    const agentCodePreview = document.getElementById('agentCodePreview');
+    const copyAgentCmdBtn = document.getElementById('copyAgentCmdBtn');
+
+    agentChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        agentChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+
+        const key = chip.getAttribute('data-agent');
+        const data = AGENT_DATA[key];
+        if (data) {
+          agentNameLabel.textContent = data.name;
+          agentConfigPath.textContent = data.configPath;
+          agentInstallCmdText.textContent = data.installCmd;
+          agentCodePreview.textContent = data.snippet;
+        }
+      });
+    });
+
+    copyAgentCmdBtn.addEventListener('click', () => {
+      copyCode(agentInstallCmdText.textContent);
+    });
+
+    /* ==========================================================================
+       Initialization on Load
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      const detected = detectBrowserLanguage();
+      setLanguage(detected);
+    });
+  </script>
+</body>
+</html>
