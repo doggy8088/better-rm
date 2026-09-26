@@ -641,6 +641,144 @@ fi
 rm -f test_restore.txt
 
 # ============================================================================
+# 測試 14: 清除過期項目 (Test 14: Purge Expired Trash Items)
+# ============================================================================
+test_title "測試 14: 清除過期項目"
+
+setup
+cd "$TEST_WORK_DIR"
+
+test_item "--purge 清除過期項目並保留未過期項目"
+echo "recent" > recent_purge.txt
+"$BETTER_RM" recent_purge.txt
+mkdir -p "$TEST_TRASH_DIR/old/project/sub"
+echo "old" > "$TEST_TRASH_DIR/old/project/sub/old__name.txt__20200101_120000_000000000__abc"
+if "$BETTER_RM" -f --purge 30 >/dev/null && \
+   ! find "$TEST_TRASH_DIR" -name "old__name.txt__*" | grep -q . && \
+   verify_in_trash "recent_purge.txt"; then
+    test_pass "過期項目已清除，未過期項目保留"
+else
+    test_fail "清除結果不正確"
+fi
+
+test_item "清除後移除變空的路徑結構目錄"
+if [ ! -e "$TEST_TRASH_DIR/old" ] && [ -d "$TEST_TRASH_DIR" ]; then
+    test_pass "空的路徑結構目錄已移除，垃圾桶根目錄保留"
+else
+    test_fail "路徑結構目錄未正確清理"
+fi
+
+test_item "確認提示選擇否 (n) 時不刪除"
+echo "old" > "$TEST_TRASH_DIR/prompt.txt__20200101_120000_000000000__abc"
+echo "n" | "$BETTER_RM" --purge 30 >/dev/null 2>&1
+if [ -e "$TEST_TRASH_DIR/prompt.txt__20200101_120000_000000000__abc" ]; then
+    test_pass "選擇否 (n) 時未刪除任何項目"
+else
+    test_fail "選擇否 (n) 時項目被錯誤刪除"
+fi
+
+test_item "確認提示選擇是 (y) 時刪除"
+echo "y" | "$BETTER_RM" --purge=30 >/dev/null 2>&1
+if [ ! -e "$TEST_TRASH_DIR/prompt.txt__20200101_120000_000000000__abc" ]; then
+    test_pass "選擇是 (y) 時成功清除"
+else
+    test_fail "選擇是 (y) 時未清除"
+fi
+
+test_item "不影響非 better-rm 格式的檔案"
+echo "foreign" > "$TEST_TRASH_DIR/finder-item.txt"
+"$BETTER_RM" -f --purge 0 >/dev/null
+if [ -f "$TEST_TRASH_DIR/finder-item.txt" ] && ! verify_in_trash "recent_purge.txt"; then
+    test_pass "--purge 0 清除所有 better-rm 項目且保留其他檔案"
+else
+    test_fail "非 better-rm 格式檔案處理不正確"
+fi
+
+test_item "清除含唯讀子目錄的過期目錄"
+mkdir -p "$TEST_TRASH_DIR/cache__20200101_120000_000000000__abc/readonly"
+echo "ro" > "$TEST_TRASH_DIR/cache__20200101_120000_000000000__abc/readonly/file"
+chmod a-w "$TEST_TRASH_DIR/cache__20200101_120000_000000000__abc/readonly"
+if "$BETTER_RM" -f --purge 30 >/dev/null 2>&1 && \
+   [ ! -e "$TEST_TRASH_DIR/cache__20200101_120000_000000000__abc" ]; then
+    test_pass "唯讀子目錄的過期目錄已清除"
+else
+    chmod -R u+w "$TEST_TRASH_DIR" 2>/dev/null
+    test_fail "唯讀子目錄的過期目錄未清除"
+fi
+
+test_item "含未過期項目的目錄不會被整個清除"
+mkdir -p "$TEST_TRASH_DIR/copy__20200101_120000_000000000__abc/sub"
+echo "new" > "$TEST_TRASH_DIR/copy__20200101_120000_000000000__abc/sub/new.txt__20990101_120000_000000000__abc"
+"$BETTER_RM" -f --purge 30 >/dev/null 2>&1
+if [ -e "$TEST_TRASH_DIR/copy__20200101_120000_000000000__abc/sub/new.txt__20990101_120000_000000000__abc" ]; then
+    test_pass "含未過期項目的目錄已略過"
+else
+    test_fail "含未過期項目的目錄被錯誤清除"
+fi
+
+test_item "拒絕無效天數與檔案參數"
+invalid_rejected=true
+for invalid_args in "--purge abc" "--purge -5" "--purge" "--purge 30 file.txt"; do
+    # shellcheck disable=SC2086
+    if "$BETTER_RM" -f $invalid_args >/dev/null 2>&1; then
+        invalid_rejected=false
+    fi
+done
+if [ "$invalid_rejected" = true ]; then
+    test_pass "無效參數正確回傳失敗"
+else
+    test_fail "無效參數未被拒絕"
+fi
+
+test_item "拒絕清除受保護或相對路徑的垃圾桶目錄"
+purge_home="/tmp/better-rm-purge-home"
+rm -rf "$purge_home"
+mkdir -p "$purge_home"
+echo "keep" > "$purge_home/keep.txt__20200101_120000_000000000__abc"
+if ! HOME="$purge_home" TRASH_DIR="$purge_home" "$BETTER_RM" -f --purge 0 >/dev/null 2>&1 && \
+   ! TRASH_DIR="relative-trash" "$BETTER_RM" -f --purge 0 >/dev/null 2>&1 && \
+   [ -f "$purge_home/keep.txt__20200101_120000_000000000__abc" ]; then
+    test_pass "受保護與相對路徑的垃圾桶目錄被拒絕"
+else
+    test_fail "未正確拒絕危險的垃圾桶目錄"
+fi
+rm -rf "$purge_home"
+
+setup
+cd "$TEST_WORK_DIR"
+# 使用隨機內容避免檔案系統壓縮影響實際佔用空間
+# Use random content so filesystem compression cannot skew allocated size
+mkdir -p "$TEST_TRASH_DIR/old"
+head -c 1572864 /dev/urandom > "$TEST_TRASH_DIR/old/big.bin__20200101_120000_000000000__abc"
+
+test_item "--dry-run 列出項目與預計釋放空間且不刪除（即使加 -f）"
+dry_run_output=$("$BETTER_RM" -f --purge 30 --dry-run 2>&1)
+dry_run_status=$?
+if [ $dry_run_status -eq 0 ] && [ -f "$TEST_TRASH_DIR/old/big.bin__20200101_120000_000000000__abc" ] && \
+   echo "$dry_run_output" | grep -q "big.bin__20200101_120000_000000000__abc" && \
+   echo "$dry_run_output" | grep -q "預計釋放約 1.5 MiB"; then
+    test_pass "試執行正確列出項目與空間且未刪除"
+else
+    test_fail "試執行結果不正確: $dry_run_output"
+fi
+
+test_item "--dry-run 未搭配 --purge 時應失敗"
+if "$BETTER_RM" --dry-run dry_run_file.txt >/dev/null 2>&1; then
+    test_fail "--dry-run 未搭配 --purge 卻成功執行"
+else
+    test_pass "--dry-run 未搭配 --purge 正確回傳失敗"
+fi
+
+test_item "確認提示與完成訊息顯示空間大小"
+purge_output=$(echo "y" | "$BETTER_RM" --purge 30 2>&1)
+if echo "$purge_output" | grep -q "（約 1.5 MiB）" && echo "$purge_output" | grep -q "釋放約 1.5 MiB" && \
+   [ ! -e "$TEST_TRASH_DIR/old/big.bin__20200101_120000_000000000__abc" ]; then
+    test_pass "提示與完成訊息正確顯示空間大小"
+else
+    test_fail "提示或完成訊息未正確顯示空間大小: $purge_output"
+fi
+
+# ============================================================================
 # 測試結果統計 (Test Results Summary)
 # ============================================================================
 cleanup
