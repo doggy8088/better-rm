@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-09-26
+
 ### Added
 - 新增 `--purge <天數>` 選項，依檔名中的刪除時間戳記永久刪除垃圾桶中超過指定天數的項目；預設先提示確認（`-f` 略過），`-v` 列出每個被刪除的項目，並會移除因此變空的路徑結構目錄。不符合 better-rm 檔名格式的檔案不受影響，且拒絕清除相對路徑或受保護的 `TRASH_DIR`。
 - 新增 `--dry-run` 選項（搭配 `--purge`），只列出預計刪除的項目與各自大小並顯示預計釋放的磁碟空間，不實際刪除；確認提示與完成訊息也會顯示空間大小。
