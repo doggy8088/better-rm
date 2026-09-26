@@ -44,8 +44,9 @@ Options:
   --auto                   Run full release flow automatically (add, commit, tag, push)
   --no-push                Skip push step in auto release flow
   --to <version>           Explicit target version for bump mode (e.g. 1.5.0)
-  --skip-changelog         Skip writing an Unreleased changelog entry
-  --changelog-note <text>  Changelog entry text (default: "Prepare release <version>")
+  --skip-changelog         Skip moving [Unreleased] entries into a new version section
+  --changelog-note <text>  Extra entry for the version section (default: "Prepare release <version>"
+                           only when [Unreleased] has no entries)
   --tag-prefix <prefix>    Tag prefix for release (default: v)
   -h, --help               Show this help
 
@@ -239,30 +240,78 @@ replace_version() {
   esac
 }
 
-update_changelog() {
+# 判斷 CHANGELOG 是否已有指定版本的段落標題（例如 "## [1.7.0] - 2026-09-26"）
+changelog_has_version() {
+  awk -v h="## [$1]" 'index($0, h) == 1 { found = 1; exit } END { exit !found }' "$PROJECT/CHANGELOG.md"
+}
+
+# 輸出 CHANGELOG 指定段落（版本號或 Unreleased）的內容，不含段落標題
+changelog_section() {
+  awk -v h="## [$1]" '
+    index($0, h) == 1 { in_section = 1; next }
+    in_section && /^## \[/ { exit }
+    in_section { print }
+  ' "$PROJECT/CHANGELOG.md"
+}
+
+# 將 [Unreleased] 的項目移至新的版本段落，並保留空的 [Unreleased] 段落供後續使用。
+# 若未建立版本段落，下次發佈擷取 [Unreleased] 作為 Release Note 時會重複列出本版項目。
+# 已有該版本段落時不做任何變更；note 非空時會加入該版本的 ### Added 區段，
+# [Unreleased] 沒有任何項目時預設加入 "Prepare release <version>"。
+cut_changelog_release() {
   local version="$1"
   local note="$2"
   local file="$PROJECT/CHANGELOG.md"
-  if ! grep -Fq "## [Unreleased]" "$file"; then
+  local release_date
+  local tmp
+
+  if changelog_has_version "$version"; then
+    echo "CHANGELOG 已有 ${version} 版本段落，略過建立。"
+    return 0
+  fi
+  if ! grep -Fxq "## [Unreleased]" "$file"; then
     echo "未找到 Unreleased 段落，更新失敗" >&2
     return 1
   fi
 
-  local tmp
+  if [[ -z "$note" ]] && ! changelog_section "Unreleased" | grep -Eq '^[-*] '; then
+    note="Prepare release ${version}"
+  fi
+
+  release_date="$(date '+%Y-%m-%d')"
   tmp="$(mktemp)"
-  if ! awk -v v="$version" -v n="$note" '
-    $0 == "## [Unreleased]" {
-      print;
-      print "";
-      print "### Added";
-      print "- " v ": " n;
-      print "";
-      inserted = 1;
-      next;
+  if ! awk -v v="$version" -v d="$release_date" -v n="$note" '
+    $0 == "## [Unreleased]" && !inserted {
+      print
+      print ""
+      print "## [" v "] - " d
+      inserted = 1
+      in_section = 1
+      next
     }
-    { print; }
+    in_section && n != "" && $0 == "### Added" {
+      print
+      print "- " n
+      n = ""
+      next
+    }
+    in_section && /^## \[/ {
+      if (n != "") {
+        print "### Added"
+        print "- " n
+        print ""
+        n = ""
+      }
+      in_section = 0
+    }
+    { print }
     END {
-      if (!inserted) { exit 1; }
+      if (in_section && n != "") {
+        print ""
+        print "### Added"
+        print "- " n
+      }
+      if (!inserted) { exit 1 }
     }
   ' "$file" > "$tmp"; then
     echo "更新 CHANGELOG 失敗，未找到插入點" >&2
@@ -271,6 +320,7 @@ update_changelog() {
   fi
 
   mv "$tmp" "$file"
+  echo "已在 CHANGELOG 建立 ${version} 版本段落。"
 }
 
 run_bump() {
@@ -306,8 +356,7 @@ run_bump() {
   done
 
   if [[ "$SKIP_CHANGELOG" -eq 0 ]]; then
-    local note="${CHANGELOG_NOTE:-Prepare release $next}"
-    update_changelog "$next" "$note"
+    cut_changelog_release "$next" "$CHANGELOG_NOTE"
   fi
 
   if ! grep -q "better-rm $next" "$PROJECT/better-rm"; then
@@ -379,7 +428,6 @@ run_release() {
   local release_url
 
   branch="$(git -C "$PROJECT" rev-parse --abbrev-ref HEAD)"
-  sha="$(git -C "$PROJECT" rev-parse HEAD)"
 
   if release_tag_exists "$version"; then
     echo "目前版本 ${version} 已存在標籤 ${tag}，請先執行 bump 後再做 release。"
@@ -387,6 +435,17 @@ run_release() {
   fi
 
   run_release_checks
+
+  # 確保 CHANGELOG 有本版段落，Release Note 才只會列出本版項目
+  if ! changelog_has_version "$version"; then
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      echo "DRY-RUN: CHANGELOG 尚無 ${version} 版本段落，將把 [Unreleased] 項目移至 ## [${version}]。"
+    elif [[ "$AUTO_RELEASE" -eq 1 ]]; then
+      cut_changelog_release "$version" "$CHANGELOG_NOTE"
+    else
+      echo "提醒：CHANGELOG 尚無 ${version} 版本段落，請先建立，以免下次 Release Note 重複列出本版項目。" >&2
+    fi
+  fi
 
   changed="$(git -C "$PROJECT" status --short -- "${RELEASE_FILES[@]}" || true)"
   if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -422,6 +481,8 @@ run_release() {
 
     git -C "$PROJECT" tag -a "${tag}" -m "Release ${tag}"
     echo "已建立標籤：${tag}"
+    # 必須在自動提交之後才取得 commit，CI 是在標籤指向的 commit 上執行
+    sha="$(git -C "$PROJECT" rev-parse "${tag}^{commit}")"
     if [[ "$PUSH" -eq 1 ]]; then
       require_command gh
       echo "開始推播..."
@@ -436,7 +497,7 @@ run_release() {
           --workflow "$CI_WORKFLOW_FILE" \
           --limit 20 \
           --json status,conclusion,url,headSha,createdAt \
-          --jq 'map(select(.headSha == "'$sha'")) | sort_by(.createdAt) | reverse | if length > 0 then (.[0].status + "\t" + (.[0].conclusion // "") + "\t" + (.[0].url // "")) else "" end' \
+          --jq 'map(select(.headSha == "'"$sha"'")) | sort_by(.createdAt) | reverse | if length > 0 then (.[0].status + "\t" + (.[0].conclusion // "") + "\t" + (.[0].url // "")) else "" end' \
           || true)"
 
         ci_run_status=""
@@ -489,14 +550,14 @@ run_release() {
         previous_tag_or_head="${VERSION_PREFIX}${version}^"
       fi
 
-      release_body="$(awk 'BEGIN {in_unreleased=0}
-        /^## \[Unreleased\]/{in_unreleased=1; next}
-        in_unreleased && /^## \[/{in_unreleased=0}
-        in_unreleased {print}
-      ' "$PROJECT/CHANGELOG.md")"
+      # 優先使用本版段落；未使用 --auto 建立版本段落時退回 [Unreleased]
+      release_body="$(changelog_section "$version")"
+      if [[ -z "$release_body" ]]; then
+        release_body="$(changelog_section "Unreleased")"
+      fi
 
       if [[ -z "$release_body" ]]; then
-        release_body="- 尚未在 CHANGELOG.md 記錄 Unreleased 變更，請以對應 PR 記錄補充。"
+        release_body="- 尚未在 CHANGELOG.md 記錄本版變更，請以對應 PR 記錄補充。"
       fi
 
       if [[ -n "$previous_tag" ]]; then

@@ -34,7 +34,8 @@ description: 自動化 better-rm 的版本提升與發佈前檢核，涵蓋版�
   - 若標籤已存在：直接停止，提醒先進行 bump。
   - 若標籤不存在：以目前版本進行 release 準備，不會再做版本位元調整。
   - 若 release 相關檔案無變更，將直接建立標籤；若有變更，會自動提交後再標籤。
-- tag push 觸發後，流程會等待 `ci-release.yml` 完成，並在 Release 建立後自動使用 `gh release edit` 以**繁體中文**更新 Release Note。
+- 若 `CHANGELOG.md` 尚無本版段落（例如 bump 時使用 `--skip-changelog`），會先將 `[Unreleased]` 的項目移至 `## [<版本>] - <日期>`，並一併納入 release commit。
+- tag push 觸發後，流程會等待 `ci-release.yml` 在標籤指向的 commit 上完成，並在 Release 建立後自動使用 `gh release edit` 以**繁體中文**更新 Release Note；「重點更新」取自 `CHANGELOG.md` 的本版段落。
 - 真正的 GitHub Release 物件建立仍由 GitHub Actions 的 `ci-release.yml` 負責。
 - 預設會啟用 `--apply`，避免在本機工作目錄有未提交變更時中斷流程（這些變更若不在 release 檔案清單內，仍不會被提交到 release commit）。
 
@@ -63,7 +64,10 @@ description: 自動化 better-rm 的版本提升與發佈前檢核，涵蓋版�
   - `install.sh`：安裝指引中的版本字串
   - `install-hooks.sh`：`VERSION=` 字串
   - `README.md`：版本提示字串
-- 預設會在 `CHANGELOG.md` 的 `[Unreleased]` 下新增一則「Added」項目，除非傳入 `--skip-changelog`。
+- 預設會將 `CHANGELOG.md` 中 `[Unreleased]` 的項目移至新的 `## [<版本>] - <日期>` 段落，並保留空的 `[Unreleased]` 供後續使用，除非傳入 `--skip-changelog`。
+  - 若 `[Unreleased]` 沒有任何項目，會自動加入 `Prepare release <版本>`。
+  - `--changelog-note <文字>` 會將該文字加入本版段落的 `### Added` 區段。
+  - 若本版段落已存在，則不做任何變更。
 - 新版本計算錯誤或已存在於檔案中的版本會直接失敗，避免誤更新。
 
 - 若不指定 `major` 或 `minor`，預設為 `patch`。
