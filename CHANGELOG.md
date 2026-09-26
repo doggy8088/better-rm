@@ -10,22 +10,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - 新增 `--purge <天數>` 選項，依檔名中的刪除時間戳記永久刪除垃圾桶中超過指定天數的項目；預設先提示確認（`-f` 略過），`-v` 列出每個被刪除的項目，並會移除因此變空的路徑結構目錄。不符合 better-rm 檔名格式的檔案不受影響，且拒絕清除相對路徑或受保護的 `TRASH_DIR`。
 - 新增 `--dry-run` 選項（搭配 `--purge`），只列出預計刪除的項目與各自大小並顯示預計釋放的磁碟空間，不實際刪除；確認提示與完成訊息也會顯示空間大小。
+
+### Fixed
+- 修復 `hooks/protect-important-paths.js` 在原生 Windows（Git Bash / MSYS / Cygwin）環境下 `/c/...` 與 `/cygdrive/c/...` 路徑未被正確轉為 Windows 磁碟機路徑解析而導致保護失效的問題，並增強 Windows 磁碟機根目錄（如 `C:\`、`D:\`）、系統目錄（`C:\Windows`、`C:\Program Files`、`C:\Users` 等）防護與不分大小寫比對 ([#14](https://github.com/doggy8088/better-rm/issues/14))。
+
+## [1.6.0] - 2026-08-19
+
+### Added
 - 現代化多語系產品形象單頁（Landing Page）與 GitHub Pages 自動部署工作流程。
 - 完整 SEO、OpenGraph 與 Twitter Card 標籤及 1200x630 社群分享縮圖。
 
 ### Fixed
 - 修復 `hooks/protect-important-paths.js` 中換行符號未被當作命令分隔符號處理，導致多行指令（如 `echo ok\nrm -rf /usr`）繞過受保護路徑檢查的安全漏洞 ([#12](https://github.com/doggy8088/better-rm/pull/12))。
-- 修復 `hooks/protect-important-paths.js` 在原生 Windows（Git Bash / MSYS / Cygwin）環境下 `/c/...` 與 `/cygdrive/c/...` 路徑未被正確轉為 Windows 磁碟機路徑解析而導致保護失效的問題，並增強 Windows 磁碟機根目錄（如 `C:\`、`D:\`）、系統目錄（`C:\Windows`、`C:\Program Files`、`C:\Users` 等）防護與不分大小寫比對 ([#14](https://github.com/doggy8088/better-rm/issues/14))。
 - 修復 Hook 在輸入無效時回傳 exit code 2，確保 Claude Code 能正確阻擋危險操作。
 - 改用 `process.exitCode` 確保 stderr 訊息能在退出前正確輸出排空。
 
 ### Changed
 - 更新 README 平台支援說明與維護者資訊。
 
+## [1.5.0] - 2026-07-21
 
 ### Added
 - 1.5.0: Prepare release 1.5.0
-
 
 ### Fixed
 - Protected `/mnt` and its immediate mount roots by default to prevent deleting Windows drives from WSL ([#9](https://github.com/doggy8088/better-rm/issues/9)).
@@ -35,19 +41,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `BETTER_RM_STATE_DIR` and XDG state-directory support for `deletion.log`.
 - Restricted newly created state directories and deletion logs to user-only access.
 
+## [1.4.3] - 2026-07-12
+
 ### Added
 - 1.4.3: Prepare release 1.4.3
 
+## [1.4.2] - 2026-07-12
 
 ### Added
 - 1.4.2: Prepare release 1.4.2
 
+## [1.4.1] - 2026-07-12
 
 ### Added
 - 1.4.1: Prepare release 1.4.1
-
-
-### Added
 - Added `install-hooks.sh` with `-a`/`--agent` selection and Claude Code support.
 - Added project-level and `-g`/`--global` Claude Code hook installation with preserving JSON merges, backups, and idempotent updates.
 - Added isolated installer integration tests in `test-install-hooks.sh`.
