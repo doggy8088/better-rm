@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-09-26
+
+### Fixed
+- 修正 `bump-and-release` 發佈腳本在自動提交版本變更後，仍以提交前的 commit 等待 `ci-release.yml`，導致等待逾時且未更新 Release Note 的問題。
+- 修正 `bump-and-release` 發佈腳本未在 CHANGELOG 建立版本段落，導致 Release Note 重複列出歷史版本項目的問題；`bump` 與 `release --auto` 現在會將 `[Unreleased]` 項目移至 `## [<版本>] - <日期>` 段落，Release Note 也改為取自本版段落。
+- 補上 CHANGELOG 中 1.7.0 的版本標題。
+
 ## [1.7.0] - 2026-09-26
 
 ### Added
