@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- `install-hooks.sh` 安裝 hook 時會偵測安裝當下提供 `node` 的 PATH 目錄，並寫入生成的 hook 指令（POSIX 寫成 `export PATH=<node 目錄>:"$PATH" && node …`；Copilot 的 PowerShell 變體以 `$env:PATH` 前綴，Windows 下並經 `cygpath` 轉換路徑）。先前指令只寫 `node …`，當 agent 以精簡 PATH 啟動 hook 時（例如 nvm 管理的 node 不在其中），hook 會以 `node: command not found` 非阻擋失敗，保護靜默失效。仍以 `node` 命令名呼叫，偵測到的目錄日後失效時會退回執行環境 PATH 上的其他 node。
+
 ## [1.8.0] - 2026-10-30
 
 ### Added

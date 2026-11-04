@@ -413,6 +413,28 @@ else
     fail "installed hook accepts harmless payload"
 fi
 
+# Hook command must embed the install-time node PATH so it survives minimal runtime PATHs
+# （例如 agent 以精簡 PATH 啟動 hook，nvm 的 node 不在其中）。
+NODE_BIN_DIR_AT_TEST="$(cd -- "$(dirname -- "$(command -v node)")" && pwd -P)"
+if printf '%s' "$SPECIAL_COMMAND" | grep -qF "$NODE_BIN_DIR_AT_TEST"; then
+    pass "hook command embeds install-time node directory"
+else
+    fail "hook command embeds install-time node directory"
+fi
+
+EMPTY_BIN="$TMP_ROOT/empty-bin"
+mkdir -p "$EMPTY_BIN"
+if printf '%s' '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rm -rf .git"},"cwd":"/workspace/project"}' | env -i HOME="$SPECIAL_HOME" PATH="$EMPTY_BIN" /bin/bash -c "$SPECIAL_COMMAND" | grep -q '"permissionDecision":"deny"'; then
+    pass "hook blocks payload under minimal PATH without node"
+else
+    fail "hook blocks payload under minimal PATH without node"
+fi
+if printf '%s' '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rm file.txt"},"cwd":"/workspace/project"}' | env -i HOME="$SPECIAL_HOME" PATH="$EMPTY_BIN" /bin/bash -c "$SPECIAL_COMMAND" >/dev/null; then
+    pass "hook accepts harmless payload under minimal PATH without node"
+else
+    fail "hook accepts harmless payload under minimal PATH without node"
+fi
+
 # Missing shared hook fails before touching settings.
 MISSING_SOURCE="$TMP_ROOT/missing-source"
 mkdir -p "$MISSING_SOURCE"

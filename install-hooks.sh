@@ -90,6 +90,47 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# 安裝時偵測提供 node 的 PATH 目錄：agent 啟動 hook 的 shell 可能只有精簡 PATH
+# （例如 nvm 管理的 node 不在其中），所以把該目錄寫進 hook 指令，執行時先補上。
+# Detect the PATH directory providing node at install time: agents may spawn hooks
+# with a minimal PATH (e.g. nvm-managed node missing), so bake the directory into
+# the hook command and prepend it at execution time.
+NODE_BIN_DIR=""
+NODE_BIN_DIR_POWERSHELL=""
+NODE_PATH_SEP_POWERSHELL=":"
+resolve_node_bin_dir() {
+    local node_path
+    node_path="$(command -v node 2>/dev/null || true)"
+
+    # 純名稱（內建／函式）無法當路徑用 / A bare name (builtin/function) is not a usable path
+    case "$node_path" in
+        */*) ;;
+        *) return 0 ;;
+    esac
+
+    local node_dir
+    node_dir="$(dirname -- "$node_path")"
+    case "$node_dir" in
+        /*|[A-Za-z]:*) ;;
+        *) node_dir="$PWD/$node_dir" ;;
+    esac
+
+    local resolved_dir
+    if resolved_dir="$(cd -- "$node_dir" 2>/dev/null && pwd -P)"; then
+        node_dir="$resolved_dir"
+    fi
+    NODE_BIN_DIR="$node_dir"
+
+    if command_exists cygpath; then
+        # Windows（Git Bash / MSYS / Cygwin）：轉成 PowerShell 可用的磁碟機路徑
+        # Windows (Git Bash / MSYS / Cygwin): convert to a PowerShell-friendly drive path
+        NODE_BIN_DIR_POWERSHELL="$(cygpath -m "$NODE_BIN_DIR" 2>/dev/null || printf '%s' "$NODE_BIN_DIR")"
+        NODE_PATH_SEP_POWERSHELL=";"
+    else
+        NODE_BIN_DIR_POWERSHELL="$NODE_BIN_DIR"
+    fi
+}
+
 cleanup_release_dirs() {
     local directory
     for directory in $CLEANUP_DIRS; do
@@ -437,6 +478,11 @@ validate_opencode_destination() {
 # 以 Node.js 安全合併 JSON hook 設定
 # Safely merge JSON hook settings with Node.js
 merge_json_settings() {
+    resolve_node_bin_dir
+
+    HOOK_NODE_BIN_DIR="$NODE_BIN_DIR" \
+    HOOK_NODE_BIN_DIR_POWERSHELL="$NODE_BIN_DIR_POWERSHELL" \
+    HOOK_NODE_PATH_SEP_POWERSHELL="$NODE_PATH_SEP_POWERSHELL" \
     node - "$SETTINGS_PATH" "$HOOK_PATH" "$SCOPE" <<'NODE'
 'use strict';
 
@@ -463,6 +509,10 @@ function shellQuote(value) {
 
 function powershellQuote(value) {
   return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"') }"`;
+}
+
+function powershellSingleQuote(value) {
+  return `'${value.replace(/'/g, "''")}'`;
 }
 
 function sameJson(left, right) {
@@ -494,8 +544,26 @@ function isOwnedCopilotHook(value) {
       || (typeof value.powershell === 'string' && isOwnedCommandHook({ command: value.powershell })));
 }
 
-const nodeCommand = `node ${shellQuote(hookPath)}`;
-const nodePowershellCommand = `node ${powershellQuote(hookPath)}`;
+// 把安裝時偵測到的 node 所在目錄寫進 hook 指令：agent 啟動 hook 的 shell 可能只有
+// 精簡 PATH（例如 nvm 的 node 不在其中），執行時先補上該目錄。仍以 `node` 命令名呼叫，
+// 萬一該目錄日後失效（例如 nvm 換版本），還有機會退回執行環境 PATH 上的其他 node。
+// Bake the install-time node directory into the hook command: agents may spawn hooks
+// with a minimal PATH (e.g. nvm node missing), so prepend the directory at runtime.
+// Still invoke `node` by name so a stale directory falls back to any node on the
+// runtime PATH.
+const nodeBinDir = process.env.HOOK_NODE_BIN_DIR || '';
+const nodeBinDirPowershell = process.env.HOOK_NODE_BIN_DIR_POWERSHELL || '';
+const nodePathSepPowershell = process.env.HOOK_NODE_PATH_SEP_POWERSHELL || ';';
+
+const nodeCall = `node ${shellQuote(hookPath)}`;
+const nodeCommand = nodeBinDir
+  ? `export PATH=${shellQuote(nodeBinDir)}:"$PATH" && ${nodeCall}`
+  : nodeCall;
+
+const nodeCallPowershell = `node ${powershellQuote(hookPath)}`;
+const nodePowershellCommand = nodeBinDirPowershell
+  ? `$env:PATH = ${powershellSingleQuote(nodeBinDirPowershell + nodePathSepPowershell)} + $env:PATH; ${nodeCallPowershell}`
+  : nodeCallPowershell;
 const statusMessage = 'Checking protected directories...';
 
 const cursorDesiredHook = {
